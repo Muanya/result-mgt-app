@@ -1,0 +1,16 @@
+.result-entry-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.entry-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.grade-preview {
+  font-weight: bold;
+  min-width: 80px;
+}

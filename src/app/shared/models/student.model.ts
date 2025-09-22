@@ -5,7 +5,7 @@ export interface Student {
   lastName?: string;
   dob?: string; // ISO date
   classId?: number;
-  gender?: 'M'|'F'|'Other';
+  gender?: 'M' | 'F' | 'Other';
 }
 
 export interface ResultEntry {
@@ -17,3 +17,9 @@ export interface ResultEntry {
   grade?: string;
   remarks?: string;
 }
+
+export interface AuthResponse { 
+  accessToken: string, 
+  refreshToken: string
+}
+

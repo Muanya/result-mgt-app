@@ -1,0 +1,120 @@
+<div [ngClass]="{'animated-form': animateForm}">
+    <div class="container">
+        <div class="left-panel">
+            <h2 class="floating">Lakeside Result System</h2>
+            <p>Access and manage academic results with our secure platform designed for Lakeside Study Center.</p>
+            <ul class="features">
+
+                <li><fa-icon [icon]="faCheckCircle"></fa-icon> Secure student authentication</li>
+                <li><fa-icon [icon]="faCheckCircle"></fa-icon> Real-time result updates</li>
+                <li><fa-icon [icon]="faCheckCircle"></fa-icon> Performance analytics</li>
+                <li><fa-icon [icon]="faCheckCircle"></fa-icon> Multi-device compatibility</li>
+            </ul>
+        </div>
+
+        <div class="right-panel">
+            <div class="form-container">
+                <div class="logo">
+                    <h1>CEFI <span>Results</span></h1>
+                </div>
+
+                <div class="tabs">
+                    <div class="tab" [ngClass]="{'active': currentForm === 'login'}" (click)="setForm('login')">Login
+                    </div>
+                    <div class="tab" [ngClass]="{'active': currentForm === 'register'}" (click)="setForm('register')">
+                        Register</div>
+                </div>
+
+                <!-- Login Form -->
+                <div class="form-page" [ngClass]="{'active': currentForm === 'login'}">
+                    <form name="loginForm" (submit)="login($event)" novalidate>
+                        <div class="form-group">
+                            <label for="loginEmail">Email</label>
+                            <input type="email" id="loginEmail" name="loginEmail" [(ngModel)]="loginData.email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="loginPassword">Password</label>
+                            <input [type]="hidePassword ? 'password' : 'text'" name="loginPassword" id="loginPassword"
+                                [(ngModel)]="loginData.password" required>
+                            <span class="password-toggle" (click)="togglePassword()">
+                                <fa-icon [icon]="hidePassword ? faEye : faEyeSlash"></fa-icon>
+                            </span>
+                        </div>
+
+                        <div class="remember-forgot">
+                            <div class="remember">
+                                <input type="checkbox" id="remember" name="remember" [(ngModel)]="loginData.remember">
+                                <label for="remember">Remember me</label>
+                            </div>
+                            <a href="#" class="forgot-password">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div class="form-page" [ngClass]="{'active': currentForm === 'register'}">
+                    <form name="registerForm" ng-submit="authCtrl.register()" novalidate>
+                        <div class="form-group">
+                            <label for="regName">Full Name</label>
+                            <input type="text" id="regName" name="regName" [(ngModel)]="registerData.name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regEmail">Email</label>
+                            <input type="email" id="regEmail" name="regEmail" [(ngModel)]="registerData.email" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regPassword">Password</label>
+                            <input [type]="hidePassword ? 'password' : 'text'" id="regPassword" name="regPassword"
+                                [(ngModel)]="registerData.password" required>
+                            <span class="password-toggle" (click)="togglePassword()">
+                                <fa-icon [icon]="hidePassword ? faEye : faEyeSlash"></fa-icon>
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regConfirmPassword">Confirm Password</label>
+                            <input [type]="hidePassword ? 'password' : 'text'" id="regConfirmPassword" name="regConfirmPassword"
+                                [(ngModel)]="registerData.confirmPassword" required>
+                            <span class="password-toggle" (click)="togglePassword()">
+                                <fa-icon [icon]="hidePassword ? faEye : faEyeSlash"></fa-icon>
+                            </span>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="regRole">I am a</label>
+                            <select id="regRole" name="regRole" [(ngModel)]="registerData.role" class="form-control" required>
+                                <option value="student">Student</option>
+                                <option value="teacher">Teacher</option>
+                                <option value="admin">Administrator</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn">Register</button>
+                    </form>
+                </div>
+
+                <div class="social-login">
+                    <p>Or login with</p>
+                    <div class="social-icons">
+                        <div class="social-icon facebook">
+
+                         <fa-icon [icon]="faFacebook"></fa-icon>
+
+                        </div>
+                        <div class="social-icon google">
+                            <fa-icon [icon]="faGoogle"></fa-icon>
+                        </div>
+                        <div class="social-icon linkedin">
+                            <fa-icon [icon]="faLinkedIn"></fa-icon>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

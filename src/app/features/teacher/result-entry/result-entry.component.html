@@ -1,0 +1,64 @@
+<div class="result-entry-container" [formGroup]="form">
+
+  <!-- Student Selector -->
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Student</mat-label>
+    <mat-select formControlName="studentId" required>
+      <mat-option *ngFor="let s of students" [value]="s.id">
+        {{ s.admissionNo }} - {{ s.firstName }} {{ s.lastName }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Term Selector -->
+  <mat-form-field appearance="outline" class="w-100">
+    <mat-label>Term</mat-label>
+    <mat-select formControlName="termId" required>
+      <mat-option *ngFor="let t of terms" [value]="t.id">
+        {{ t.name }} ({{ t.year }})
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <h3>Subject Scores</h3>
+  <div formArrayName="entries">
+    <div *ngFor="let entry of entries.controls; let i = index" [formGroupName]="i" class="entry-row">
+      
+      <!-- Subject -->
+      <mat-form-field appearance="outline">
+        <mat-label>Subject</mat-label>
+        <mat-select formControlName="subjectId" required>
+          <mat-option *ngFor="let sub of subjects" [value]="sub.id">
+            {{ sub.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <!-- Score -->
+      <mat-form-field appearance="outline">
+        <mat-label>Score</mat-label>
+        <input matInput type="number" formControlName="score" min="0" max="100" required>
+      </mat-form-field>
+
+      <!-- Auto grade preview -->
+      <span class="grade-preview" *ngIf="entry.value.score">
+        Grade: {{ scoreToGrade(entry.value.score) }}
+      </span>
+
+      <!-- Remove button -->
+      <button mat-icon-button color="warn" (click)="removeEntry(i)" aria-label="Remove">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <button mat-stroked-button color="primary" (click)="addEntry()">
+    <mat-icon>add</mat-icon> Add Subject
+  </button>
+
+  <div class="actions">
+    <button mat-raised-button color="accent" (click)="submit()" [disabled]="form.invalid">
+      Save Results
+    </button>
+  </div>
+</div>
