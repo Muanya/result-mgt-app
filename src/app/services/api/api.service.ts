@@ -1,14 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse } from '../../shared/models/student.model';
+import { AuthResponse, RegisterData } from '../../shared/models/student.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  private baseUrl = 'http://127.0.0.1:8080'; 
+  private baseUrl = 'http://127.0.0.1:8080';
 
 
   constructor(private http: HttpClient) { }
@@ -19,6 +19,10 @@ export class ApiService {
 
   postData(endpoint: string, body?: any): Observable<any> {
     return this.http.post(`${this.baseUrl}/${endpoint}`, body, { withCredentials: true });
+  }
+
+  register(data: RegisterData): Observable<AuthResponse> {
+    return this.postData('v1/auth/register', data) as Observable<AuthResponse>;
   }
 
   login(email: string, password: string): Observable<AuthResponse> {

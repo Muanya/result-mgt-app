@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faCheckCircle, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
-import { faFacebookF, faGoogle, faLinkedin, faTwitter } from '@fortawesome/free-brands-svg-icons';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
 import { take } from 'rxjs';
+import { Router } from '@angular/router';
+import { LoginData, RegisterData } from '../../../shared/models/student.model';
 
 @Component({
   selector: 'app-authenticate',
@@ -20,24 +21,18 @@ export class AuthenticateComponent implements OnInit {
   faCheckCircle = faCheckCircle;
   faEye = faEye;
   faEyeSlash = faEyeSlash;
-  faFacebook = faFacebookF;
-  faGoogle = faGoogle;
-  faLinkedIn = faLinkedin
-
   hidePassword = true;
 
-
-
   // Login data model
-  loginData = {
+  loginData: LoginData = {
     email: '',
     password: '',
-    remember: false
   };
 
   // Register data model
-  registerData = {
-    name: '',
+  registerData: RegisterData = {
+    firstName: '',
+    lastName: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -46,7 +41,7 @@ export class AuthenticateComponent implements OnInit {
 
 
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private router: Router) { }
   ngOnInit() { }
 
   // Switch between login and register forms
@@ -59,7 +54,7 @@ export class AuthenticateComponent implements OnInit {
   };
 
   // Toggle password visibility
-  togglePassword() {    
+  togglePassword() {
     this.hidePassword = !this.hidePassword;
   }
 
@@ -68,14 +63,16 @@ export class AuthenticateComponent implements OnInit {
     event.preventDefault();
     console.log('Login data:', this.loginData, this.loginData.email, this.loginData.password);
 
-    this.authService.login(this.loginData.email, this.loginData.password).pipe(take(1)).subscribe(result => {
+    this.authService.login(this.loginData).pipe(take(1)).subscribe(result => {
       console.log('Login successful:', result);
-      alert('Login successful!');
+      this.router.navigate(['/student/']);
     })
   };
 
   // Register function
-  register() {
+  register(event: Event) {
+    event.preventDefault();
+
     console.log('Register data:', this.registerData);
 
     // Check if passwords match
@@ -83,6 +80,11 @@ export class AuthenticateComponent implements OnInit {
       alert('Passwords do not match!');
       return;
     }
+
+    this.authService.register(this.registerData).pipe(take(1)).subscribe(result => {
+      console.log('Register successful:', result);
+      this.router.navigate(['/student/']);
+    })
 
 
   };

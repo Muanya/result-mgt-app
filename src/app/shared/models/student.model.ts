@@ -18,8 +18,29 @@ export interface ResultEntry {
   remarks?: string;
 }
 
-export interface AuthResponse { 
-  accessToken: string, 
+export interface AuthResponse {
+  accessToken: string,
   refreshToken: string
+}
+
+export interface LoginData {
+  email: string;
+  password: string;
+}
+
+export interface RegisterData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: 'student' | 'admin' | 'teacher'; 
+}
+
+export interface NavItem {
+  label: string;
+  route?: string;
+  children?: NavItem[];
+  action?: () => void;
 }
 

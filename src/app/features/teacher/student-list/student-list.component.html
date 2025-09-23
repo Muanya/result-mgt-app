@@ -1,6 +1,8 @@
-<!-- <mat-form-field>
+<app-navbar [navItems]="menu"></app-navbar>
+
+<mat-form-field>
   <input matInput placeholder="Search" (keyup)="applyFilter($event.target.value)">
-</mat-form-field> -->
+</mat-form-field>
 
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   <!-- Admission No -->

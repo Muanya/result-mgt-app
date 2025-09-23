@@ -140,6 +140,18 @@ body {
     transition: all 0.3s ease;
 }
 
+.form-group.role-select {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    align-items: center;
+
+    label {
+        margin: 0;
+        flex: 0 0 auto;
+    }
+}
+
 .form-group input:focus {
     border-color: #2575fc;
     box-shadow: 0 0 0 2px rgba(37, 117, 252, 0.2);

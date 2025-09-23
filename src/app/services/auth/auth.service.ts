@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, take, tap } from 'rxjs';
 import { ApiService } from '../api/api.service';
+import { LoginData, RegisterData } from '../../shared/models/student.model';
 
 
 @Injectable({ providedIn: 'root' })
@@ -13,8 +14,8 @@ export class AuthService {
   constructor(private apiService: ApiService) { }
 
 
-  login(email: string, password: string) {
-    return this.apiService.login(email, password)
+  login(data: LoginData) {
+    return this.apiService.login(data.email, data.password)
       .pipe(take(1), tap(res => {
         if (res?.accessToken) {
           this.accessToken = res.accessToken;
@@ -24,12 +25,25 @@ export class AuthService {
   }
 
 
+  register(data: RegisterData) {
+    return this.apiService.register(data)
+      .pipe(take(1), tap(res => {
+        if (res?.accessToken) {
+          this.accessToken = res.accessToken;
+          this.loggedIn$.next(true);
+        }
+      }));
+  }
+
   refresh(): Observable<any> {
+    console.log('Refreshing token...');
+    
     return this.apiService.refreshToken<{ accessToken: string }>()
       .pipe(
         take(1),
         tap(res => {
           this.accessToken = res.accessToken;
+          this.loggedIn$.next(true);
         })
       );
   }

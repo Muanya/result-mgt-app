@@ -1,0 +1,50 @@
+<nav class="navbar">
+    <div class="navbar-container">
+        <a class="logo" routerLink="/">{{ logo }}</a>
+
+        <ul class="nav-links">
+            @for (item of navItems; track item.label) {
+            <li [ngClass]="{'dropdown': item.children}">
+
+                <!-- Normal link -->
+                @if (item.route && !item.children) {
+                <a routerLink="{{item.route}}" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+                    {{ item.label }}
+                </a>
+                }
+                <!-- Button action (like logout) -->
+                @if (item.action && !item.children) {
+                <a (click)="item.action()">
+                    {{ item.label }}
+                </a>
+                }
+
+
+                <!-- Dropdown -->
+                @if (item.children) {
+                <ng-container>
+                    <a href="javascript:void(0)" class="dropbtn">{{ item.label }} ▾</a>
+                    <div class="dropdown-content">
+                        @for (child of item.children; track child.label) {
+                        @if (child.route) {
+                        <a routerLink="{{child.route}}">
+                            {{ child.label }}
+                        </a>
+                        }
+                        }
+                        @for (child of item.children; track child.label) {
+                        @if (child.action) {
+                        <a (click)="child.action()">
+                            {{ child.label }}
+                        </a>
+                        }
+                        }
+
+                    </div>
+                </ng-container>
+                }
+            </li>
+            }
+        </ul>
+    </div>
+</nav>
