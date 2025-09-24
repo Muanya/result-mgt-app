@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { NavItem } from '../../models/student.model';
+import { NavItem } from '../../models/shared.model';
 import { CommonModule } from '@angular/common';
 
 @Component({

@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, FormArray, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { StudentService } from '../../../services/student/student.service';
-import { ResultService } from '../../../services/result/result.service';
 import { CommonModule } from '@angular/common';
+import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
+import { ActivatedRoute } from '@angular/router';
+import { ApiService } from '../../../services/api/api.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-result-entry',
@@ -16,66 +18,85 @@ import { MatIconModule } from '@angular/material/icon';
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
-    MatIconModule
+    MatIconModule,
+    MatCardModule,
   ],
   templateUrl: './result-entry.component.html',
   styleUrl: './result-entry.component.scss'
 })
-export class ResultEntryComponent {
- form!: FormGroup;
-  subjects: any[] = [];
+export class ResultEntryComponent implements OnInit {
+  enrollmentId!: number;
   students: any[] = [];
-terms: any;
+  resultForm!: FormGroup;
+  gradeOptions: string[] = ['A', 'B', 'C', 'D', 'E', 'F'];
 
-  constructor(private fb: FormBuilder,
-              private resultService: ResultService,
-              private studentService: StudentService,
-             ) {}
 
-  ngOnInit() {
-    this.form = this.fb.group({
-      studentId: [null, Validators.required],
-      termId: [null, Validators.required],
-      entries: this.fb.array([])
+  constructor(
+    private route: ActivatedRoute,
+    private fb: FormBuilder,
+    private apiService: ApiService
+  ) { }
+
+  ngOnInit(): void {
+    this.enrollmentId = Number(this.route.snapshot.paramMap.get('id'));
+
+
+    // Fetch enrollment details to get students
+    this.apiService.getEnrollmentById(this.enrollmentId).pipe(take(1)).subscribe(enrollment => {
+      this.students = enrollment.students;
+
+
+      // Build form with one result input per student
+      this.resultForm = this.fb.group({
+        results: this.fb.array(
+          this.students.map(s =>
+            this.fb.group({
+              studentId: [s.id],
+              score: ['', Validators.required],
+              grade: [''],
+              id: [null] // To track existing results for updates
+            })
+          )
+        )
+      });
+
+      this.apiService.getResultsByEnrollment(this.enrollmentId).pipe(take(1)).subscribe(existingResults => {
+        if (existingResults && existingResults.length) {
+          const resultsArray = this.resultForm.get('results') as FormArray;
+          console.log('Existing result', existingResults);
+          existingResults.forEach(er => {
+            const studentResultGroup = resultsArray.controls.find(g => g.value.studentId === er.studentId);
+
+            if (studentResultGroup) {
+              studentResultGroup.patchValue({
+                score: er.score,
+                grade: er.grade,
+                id: er.id
+              });
+            }
+          });
+        }
+      });
     });
 
-    this.resultService.getAll().subscribe(s => this.subjects = s);
-    this.studentService.getStudents({ size: 1000 }).subscribe(r => this.students = r.data);
+
   }
 
-  get entries(): FormArray { return this.form.get('entries') as FormArray; }
-
-  addEntry(subjectId?: number, score?: number) {
-    this.entries.push(this.fb.group({
-      subjectId: [subjectId ?? null, Validators.required],
-      score: [score ?? null, [Validators.required, Validators.min(0), Validators.max(100)]]
-    }));
+  get results(): FormArray {
+    return this.resultForm.get('results') as FormArray;
   }
 
-  removeEntry(i: number) { this.entries.removeAt(i); }
-
-  scoreToGrade(score: number): string {
-    if (score >= 75) return 'A';
-    if (score >= 60) return 'B';
-    if (score >= 50) return 'C';
-    if (score >= 40) return 'D';
-    return 'F';
-  }
-
-  submit() {
-    if (this.form.invalid) return this.form.markAllAsTouched();
-    const payload = this.form.value;
-    const results = payload.entries.map((e: any) => ({
-      studentId: payload.studentId,
-      termId: payload.termId,
-      subjectId: e.subjectId,
-      score: e.score,
-      grade: this.scoreToGrade(e.score)
-    }));
-    this.resultService.bulkCreate(results).subscribe(() => {
-      alert('Results saved');
-      this.form.reset();
-      this.entries.clear();
-    });
+  onSubmit() {
+    if (this.resultForm.valid) {
+      let results = this.resultForm.value.results as any[];
+      results.forEach(result => {
+        result.enrollmentId = this.enrollmentId;
+      });
+    
+      console.log('Submitting mass results:', results);
+      this.apiService.bulkSaveResults(results).pipe(take(1)).subscribe(() => {
+        alert('Results saved for all students 🎉');
+      });
+    }
   }
 }

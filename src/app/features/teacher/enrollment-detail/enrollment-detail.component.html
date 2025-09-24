@@ -1,0 +1,60 @@
+@if(enrollment){
+<div class="detail-container">
+    <mat-card class="detail-card">
+        <mat-card-header>
+            <mat-card-title>{{ enrollment.enrollmentName }}</mat-card-title>
+            <mat-card-subtitle>
+                Course: {{ enrollment.course.code }} - {{ enrollment.course.title }}
+            </mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+            <p><strong>Date:</strong> {{ enrollment.startDate | date:'fullDate' }}</p>
+        </mat-card-content>
+
+        <mat-card-actions>
+      <!-- NEW Mass Result Button -->
+      <button mat-raised-button color="accent" (click)="goToMassResult()">
+        ➕ Add Results for All Students
+      </button>
+    </mat-card-actions>
+    </mat-card>
+
+    <!-- Lecturers -->
+    <mat-card class="detail-card">
+        <mat-card-header>
+            <mat-card-title>Lecturers</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <ul>
+                @for (lec of enrollment.magisters; track $index) {
+                <li >
+                    👨‍🏫 {{ lec.firstName }} {{ lec.lastName }} ({{ lec.email }})
+                </li>
+            }
+            </ul>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- Students with Add Result button -->
+    <mat-card class="detail-card">
+        <mat-card-header>
+            <mat-card-title>Enrolled Students</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div *ngFor="let student of enrollment.students" class="student-row">
+                <div class="student-info">
+                    <p>
+                        <strong>{{ student.firstName }} {{ student.lastName }}</strong> <br>
+                        <small>{{ student.email }}</small>
+                    </p>
+                </div>
+                <button mat-raised-button color="primary" (click)="goToAddResult(student.id)">
+                    ➕ Add Result
+                </button>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
+}@else {
+<div class="loading">Loading enrollment details...</div>
+}

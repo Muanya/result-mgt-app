@@ -1,0 +1,69 @@
+<!-- course-detail.component.html -->
+<div class="course-detail-container">
+    <!-- Course Header -->
+    <mat-card class="course-header">
+        <h1>{{ course.title }}</h1>
+        <p class="subtitle">{{ course.code }}</p>
+        <div class="course-meta">
+            <span><mat-icon>schedule</mat-icon> Duration: {{ course.creditUnit }} week(s)</span>
+        </div>
+    </mat-card>
+
+    <div class="content-sections">
+        <!-- Enrollments Section -->
+        <mat-card class="section-card">
+            <mat-card-header>
+                <mat-card-title>📚 Enrollments</mat-card-title>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <mat-list>
+                    <mat-list-item *ngFor="let enrollment of enrollments">
+                        <mat-icon matListIcon>how_to_reg</mat-icon>
+                        <h4 matLine>{{ enrollment.name }}</h4>
+                        <p matLine>Enrolled on {{ enrollment.date | date }}</p>
+                    </mat-list-item>
+                </mat-list>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Completed Students Section -->
+        <mat-card class="section-card">
+            <mat-card-header>
+                <mat-card-title>✅ Completed Students</mat-card-title>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <table mat-table [dataSource]="completedStudents" class="mat-elevation-z2 full-width">
+                    <ng-container matColumnDef="name">
+                        <th mat-header-cell *matHeaderCellDef> Student </th>
+                        <td mat-cell *matCellDef="let student">{{ student.name }}</td>
+                    </ng-container>
+
+
+
+                    <tr mat-header-row *matHeaderRowDef="['name']"></tr>
+                    <tr mat-row *matRowDef="let row; columns: ['name'];"></tr>
+                </table>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Not Completed Section -->
+        <mat-card class="section-card">
+            <mat-card-header>
+                <mat-card-title>⏳ Not Completed Students</mat-card-title>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <mat-list>
+                    @for (student of notCompletedStudents; track student.id) {
+                    <mat-list-item>
+                        <mat-icon matListIcon>pending</mat-icon>
+                        <h4 matLine>{{ student.name }}</h4>
+                    </mat-list-item>
+                    }
+                </mat-list>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

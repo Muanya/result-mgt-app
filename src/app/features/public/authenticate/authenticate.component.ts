@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../services/auth/auth.service';
 import { take } from 'rxjs';
 import { Router } from '@angular/router';
-import { LoginData, RegisterData } from '../../../shared/models/student.model';
+import { LoginData, RegisterData } from '../../../shared/models/shared.model';
 
 @Component({
   selector: 'app-authenticate',

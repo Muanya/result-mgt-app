@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, take, tap } from 'rxjs';
 import { ApiService } from '../api/api.service';
-import { LoginData, RegisterData } from '../../shared/models/student.model';
+import { LoginData, RegisterData } from '../../shared/models/shared.model';
 
 
 @Injectable({ providedIn: 'root' })

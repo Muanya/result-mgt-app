@@ -1,0 +1,98 @@
+<div class="enrollment-container">
+    <!-- Left: Form -->
+    <div class="form-side">
+        <h2>Create Enrollment</h2>
+        <form [formGroup]="enrollmentForm" (ngSubmit)="onSubmit()">
+
+            <!-- Course Dropdown -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Course</mat-label>
+                <mat-select formControlName="course">
+                    @for (course of courses; track course.id) {
+                    <mat-option [value]="course.id">
+                        {{ course.code }}
+                    </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Enrollment Name (auto + editable) -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Class Name</mat-label>
+                <input matInput formControlName="enrollmentName" />
+            </mat-form-field>
+
+
+            <!-- Students Multi-Select -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Students</mat-label>
+                <mat-select formControlName="students" multiple>
+                    @for (student of students; track student.id) {
+                    <mat-option [value]="student.id">
+                        {{ student.firstName }} {{ student.lastName }}
+                    </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Magisters Multi-Select -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Magisters</mat-label>
+                <mat-select formControlName="magisters" multiple>
+                    @for (magister of magisters; track magister.id) {
+                    <mat-option [value]="magister.id">
+                        {{ magister.firstName }} {{ magister.lastName }}
+                    </mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Enrollment Date -->
+            <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Enrollment Date</mat-label>
+                <input matInput [matDatepicker]="picker" formControlName="enrollmentDate">
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-datepicker #picker></mat-datepicker>
+            </mat-form-field>
+
+            <!-- Submit -->
+            <button mat-raised-button color="primary" type="submit" [disabled]="!enrollmentForm.valid">
+                Create Enrollment
+            </button>
+        </form>
+    </div>
+
+    <!-- Right: Preview -->
+    <div class="preview-side" *ngIf="enrollmentForm.value">
+        <h3>Enrollment Preview</h3>
+        <div class="preview-card">
+            <p><strong>Course:</strong>
+                {{ getCourseTitle(enrollmentForm.value.course) }}
+            </p>
+
+            <p><strong>Class Name:</strong>
+                {{ enrollmentForm.value.enrollmentName }}
+            </p>
+
+            <p><strong>Students:</strong></p>
+            <ul>
+                @for(sId of enrollmentForm.value.students; track $index) {
+                <li>
+                    {{ getStudentName(sId) }}
+                </li>
+                }
+            </ul>
+
+            <p><strong>Magisters:</strong></p>
+            <ul>
+                @for (lId of enrollmentForm.value.magisters; track $index) {
+                <li>
+                    {{ getMagisterName(lId) }}
+                </li>
+                }
+            </ul>
+
+            <p><strong>Start Date:</strong> {{ enrollmentForm.value.enrollmentDate | date }}</p>
+        </div>
+    </div>
+</div>

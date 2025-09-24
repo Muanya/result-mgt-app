@@ -1,0 +1,51 @@
+/* course-detail.component.scss */
+.course-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+}
+
+.course-header {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #42a5f5, #478ed1);
+  color: white;
+  border-radius: 16px;
+}
+
+.course-header h1 {
+  margin: 0;
+  font-size: 2rem;
+}
+
+.subtitle {
+  opacity: 0.9;
+}
+
+.course-meta {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.9rem;
+  align-items: center;
+}
+
+.content-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.section-card {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.full-width {
+  width: 100%;
+}
+
+
+.mdc-list-item {
+  height: 72px;
+}

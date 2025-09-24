@@ -1,3 +1,5 @@
+import e from "express";
+
 export interface Student {
   id?: number;
   admissionNo: string;
@@ -34,7 +36,7 @@ export interface RegisterData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'student' | 'admin' | 'teacher'; 
+  role: 'student' | 'admin' | 'teacher';
 }
 
 export interface NavItem {
@@ -44,3 +46,38 @@ export interface NavItem {
   action?: () => void;
 }
 
+export interface UserDetail {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+
+export interface CourseDetail {
+  id: number;
+  code: string;
+  title: string;
+  creditUnit: string;
+}
+
+export interface EnrollmentDetail {
+  id: number;
+  enrollmentName: string;
+  course: CourseDetail;
+  students: UserDetail[];
+  magisters: UserDetail[];
+  startDate: string;
+}
+
+export interface SingleResultModal {
+  sId: number;
+  eId: number;
+  firstName: string;
+  lastName: string;
+}
+
+export interface EntityListData {
+  title: string;
+  subtitle: string;
+  type: string;
+}

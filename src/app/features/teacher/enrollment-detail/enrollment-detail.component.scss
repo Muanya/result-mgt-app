@@ -1,0 +1,31 @@
+.detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+}
+
+.detail-card {
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  padding: 1rem;
+}
+
+.student-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed #ddd;
+  padding: 0.8rem 0;
+}
+
+.student-info {
+  font-size: 14px;
+}
+
+.loading {
+  text-align: center;
+  font-size: 16px;
+  padding: 2rem;
+  color: gray;
+}
