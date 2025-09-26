@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { AuthResponse, RegisterData } from '../../shared/models/shared.model';
@@ -13,12 +13,20 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
+  private getHeaders() {
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': '*/*'
+    });
+  }
+
+
   getData(endpoint: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${endpoint}`, { withCredentials: true });
+    return this.http.get(`${this.baseUrl}/${endpoint}`, { headers: this.getHeaders(), withCredentials: true });
   }
 
   postData(endpoint: string, body?: any): Observable<any> {
-    return this.http.post(`${this.baseUrl}/${endpoint}`, body, { withCredentials: true });
+    return this.http.post(`${this.baseUrl}/${endpoint}`, body, { headers: this.getHeaders(), withCredentials: true });
   }
 
   register(data: RegisterData): Observable<AuthResponse> {
@@ -35,7 +43,7 @@ export class ApiService {
   }
 
   refreshToken<T>() {
-    return this.postData('v1/auth/refresh') as Observable<AuthResponse>;
+    return this.postData('v1/auth/refresh', {}) as Observable<AuthResponse>;
   }
 
   getAllCourses(): Observable<any[]> {

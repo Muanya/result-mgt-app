@@ -20,9 +20,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
     return next.handle(authReq).pipe(
       catchError(error => {
+        
         if (error.status === 401) {
           // Access token might be expired, try to refresh
-          return this.autoRefreshToken(req, next);
+          // return this.autoRefreshToken(req, next);
         }
         return throwError(() => error);
       })
@@ -33,22 +34,27 @@ export class AuthInterceptor implements HttpInterceptor {
 
   private autoRefreshToken(req: HttpRequest<any>, next: HttpHandler) {
     if (!this.isRefreshing) {
+      console.log('Refreshing token 123..');
+      
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
 
-      return this.auth.refresh().pipe(
-        switchMap((res) => {
-          this.isRefreshing = false;
-          this.auth.setAccessToken(res.accessToken); 
-          this.refreshTokenSubject.next(res.accessToken);
-          return next.handle(this.addToken(req, res.accessToken));
-        }),
-        catchError((err) => {
-          this.isRefreshing = false;
+
+      return this.auth.refresh().then(() => {
+        const newToken = this.auth.getAccessToken();
+        if (newToken) {
+          this.refreshTokenSubject.next(newToken);
+          return next.handle(this.addToken(req, newToken));
+        } else {
           this.auth.logout();
-          return throwError(() => err);
-        })
-      );
+          return throwError(() => new Error('No new access token'));
+        }
+      }).catch(err => {
+        this.auth.logout();
+        return throwError(() => err);
+      }).finally(() => {
+        this.isRefreshing = false;
+      });
     } else {
       // Wait until refresh is done, then retry
       return this.refreshTokenSubject.pipe(

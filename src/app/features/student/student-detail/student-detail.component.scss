@@ -1,0 +1,26 @@
+/* student-details.component.scss */
+.student-container {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 16px;
+  padding: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.student-card {
+  border-radius: 16px;
+  padding: 8px;
+}
+
+.results-card {
+  border-radius: 16px;
+  padding: 8px;
+
+  table {
+    width: 100%;
+    margin-top: 12px;
+  }
+}

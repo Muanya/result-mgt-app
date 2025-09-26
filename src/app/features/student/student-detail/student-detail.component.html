@@ -1,1 +1,38 @@
-<p>student-detail works!</p>
+<app-navbar></app-navbar>
+<div class="student-container">
+  <!-- Student Info -->
+  <mat-card class="student-card">
+    <mat-card-header>
+      <img mat-card-avatar [src]="student.image" alt="student photo" />
+      <mat-card-title>{{ student.firstName }} {{ student.lastName }}</mat-card-title>
+      <mat-card-subtitle>{{ student.department }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <p><strong>ID:</strong> {{ student.id }}</p>
+      <p><strong>Email:</strong> {{ student.email }}</p>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Student Results -->
+  <mat-card class="results-card">
+    <mat-card-title>Results</mat-card-title>
+    <mat-divider></mat-divider>
+    <table mat-table [dataSource]="results" class="mat-elevation-z2">
+
+      <!-- Course Column -->
+      <ng-container matColumnDef="course">
+        <th mat-header-cell *matHeaderCellDef> Course </th>
+        <td mat-cell *matCellDef="let result"> {{result.course}} </td>
+      </ng-container>
+
+      <!-- Grade Column -->
+      <ng-container matColumnDef="grade">
+        <th mat-header-cell *matHeaderCellDef> Grade </th>
+        <td mat-cell *matCellDef="let result"> {{result.grade}} </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['course','grade']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['course','grade'];"></tr>
+    </table>
+  </mat-card>
+</div>

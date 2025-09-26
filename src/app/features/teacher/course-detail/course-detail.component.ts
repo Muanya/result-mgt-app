@@ -8,7 +8,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
-import { catchError, forkJoin, map, of, Subject, takeUntil } from 'rxjs';
+import { catchError, forkJoin, map, Observable, of, Subject, takeUntil, tap } from 'rxjs';
 import { MatLineModule } from '@angular/material/core';
 
 @Component({
@@ -30,43 +30,53 @@ export class CourseDetailComponent implements OnInit {
   private destroy$ = new Subject<void>();
 
 
-  enrollments: { name: string, date: Date }[] = [
+  // enrollments: { name: string, date: Date }[] = [
 
-  ];
+  // ];
 
-  course!: {
-    title?: string;
-    code?: string;
-    creditUnit?: number;
-  };
+  // course: {
+  //   title?: string;
+  //   code?: string;
+  //   creditUnit?: number;
+  // } = {
+  //     title: '', code: '', creditUnit: 0
+  //   };
 
 
 
-  completedStudents: {
-    id: number,
-    name: string
-  }[] = [
+  // completedStudents: {
+  //   id: number,
+  //   name: string
+  // }[] = [
 
-    ];
+  //   ];
 
-  notCompletedStudents: {
-    id: number,
-    name: string,
-  }[] = [
+  // notCompletedStudents: {
+  //   id: number,
+  //   name: string,
+  // }[] = [
 
-    ];
+  //   ];
+
+  courseData$!: Observable<{
+    course: any;
+    enrollments: any[];
+    completedStudents: any[];
+    notCompletedStudents: any[];
+  }>;
 
 
   constructor(private apiService: ApiService, private route: ActivatedRoute) { }
 
+
+
   ngOnInit(): void {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadCourseDetails();
-
-
   }
+
   loadCourseDetails() {
-    forkJoin({
+    this.courseData$ = forkJoin({
       course: this.apiService.getCourseById(this.courseId).pipe(
         catchError(err => {
           console.error('Error fetching course:', err);
@@ -104,17 +114,18 @@ export class CourseDetailComponent implements OnInit {
           return of([]);
         })
       )
-    })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(({ course, enrollments, completedStudents, allStudents }) => {
-        this.course = course;
-        this.enrollments = enrollments;
-        this.completedStudents = completedStudents;
-
-        this.notCompletedStudents = allStudents.filter(
+    }).pipe(
+      map(({ course, enrollments, completedStudents, allStudents }) => ({
+        course,
+        enrollments,
+        completedStudents,
+        notCompletedStudents: allStudents.filter(
           s => !completedStudents.some(cs => cs.id === s.id)
-        );
-      });
+        )
+      })),
+      tap(data => console.log('Course data:', data)), // Instead of subscribe console.log
+      takeUntil(this.destroy$)
+    );
   }
 
   ngOnDestroy(): void {

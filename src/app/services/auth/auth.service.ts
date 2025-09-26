@@ -1,6 +1,5 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, take, tap } from 'rxjs';
+import { BehaviorSubject, firstValueFrom, Observable, take, tap } from 'rxjs';
 import { ApiService } from '../api/api.service';
 import { LoginData, RegisterData } from '../../shared/models/shared.model';
 
@@ -9,9 +8,25 @@ import { LoginData, RegisterData } from '../../shared/models/shared.model';
 export class AuthService {
   private accessToken: string | null = null;
 
-  private loggedIn$ = new BehaviorSubject<boolean>(false);
+  private loggedIn$ = new BehaviorSubject<boolean | null>(null);
 
-  constructor(private apiService: ApiService) { }
+  constructor(private apiService: ApiService) {
+
+  }
+
+  async initApp(): Promise<void> {
+    try {
+      await this.refresh();
+      // this.loggedIn$.next(true);
+    } catch {
+      console.log('No valid session found during app initialization');
+      
+      this.loggedIn$.next(false);
+    } finally {
+      console.log('AuthService: App initialization complete');
+
+    }
+  }
 
 
   login(data: LoginData) {
@@ -20,6 +35,10 @@ export class AuthService {
         if (res?.accessToken) {
           this.accessToken = res.accessToken;
           this.loggedIn$.next(true);
+        } else {
+          console.log('Login failed: No access token received');
+          
+          this.loggedIn$.next(false);
         }
       }));
   }
@@ -31,21 +50,27 @@ export class AuthService {
         if (res?.accessToken) {
           this.accessToken = res.accessToken;
           this.loggedIn$.next(true);
+        } else {
+          this.loggedIn$.next(false);
         }
       }));
   }
 
-  refresh(): Observable<any> {
+  async refresh(): Promise<void> {
     console.log('Refreshing token...');
-    
-    return this.apiService.refreshToken<{ accessToken: string }>()
-      .pipe(
-        take(1),
-        tap(res => {
-          this.accessToken = res.accessToken;
-          this.loggedIn$.next(true);
-        })
-      );
+
+    await firstValueFrom(this.apiService.refreshToken<{ accessToken: string }>()).then(res => {      
+      if (res?.accessToken) {
+        this.accessToken = res.accessToken;
+        this.loggedIn$.next(true);
+      } else {        
+        this.loggedIn$.next(false);
+      }
+    }).catch((err) => { 
+      console.log('Refresh token failed', err);
+      this.loggedIn$.next(null);
+    });
+
   }
 
   logout(): Observable<any> {
@@ -68,7 +93,7 @@ export class AuthService {
     this.accessToken = token;
   }
 
-  isLoggedIn(): Observable<boolean> {
+  isLoggedIn(): Observable<boolean | null> {
     return this.loggedIn$.asObservable();
   }
 }

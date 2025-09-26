@@ -1,17 +1,33 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
-import { map, Observable } from 'rxjs';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 
 import { AuthService } from '../../services/auth/auth.service';
 
-@Injectable({ providedIn: 'root' })
-export class AuthGuard implements CanActivate {
 
-  constructor(private auth: AuthService, private router: Router) { }
-  canActivate(): Observable<boolean | UrlTree> {
-    return this.auth.isLoggedIn().pipe(
-      map(isLoggedIn => isLoggedIn ? true : this.router.createUrlTree(['/public']))
-    );
+export const authGuard: CanActivateFn = async () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+
+  try {
+    // Check if the user is logged in (could be an observable)
+    const isLoggedIn = await firstValueFrom(authService.isLoggedIn());
+
+
+    if (isLoggedIn === null) {
+      router.navigate(['/public/splash']);
+      return false;
+    }
+
+    if (!isLoggedIn) {
+      router.navigate(['/public']);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.log('AuthGuard error:', error);
+
+    router.navigate(['/public']);
+    return false;
   }
-
-}
+};

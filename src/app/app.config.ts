@@ -7,16 +7,15 @@ import { provideNativeDateAdapter } from '@angular/material/core';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { AuthService } from './services/auth/auth.service';
-import { catchError, firstValueFrom, of } from 'rxjs';
 
 
 export async function appInitializer(): Promise<any> {
   const authService = inject(AuthService);
-
-  return await firstValueFrom(authService.refresh().pipe(
-    catchError(() => of(null))
-  ));
+  return authService.initApp().then(() => {
+    console.log("App initialized");
+  });
 }
+
 
 export const appConfig: ApplicationConfig = {
   providers: [

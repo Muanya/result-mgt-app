@@ -1,11 +1,11 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
+import { authGuard } from './core/guards/auth.guard';
 import { FeatureListComponent } from './shared/components/feature-list/feature-list.component';
 
 export const routes: Routes = [
   {
     path: 'student',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     data: { roles: ['Student'] },
     loadChildren: () =>
       import('./features/student/student.routes').then(m => m.routes)
@@ -13,8 +13,7 @@ export const routes: Routes = [
 
   {
     path: 'teacher',
-    canActivate: [],
-    data: { roles: ['Student'] },
+    canActivate: [authGuard],
     loadChildren: () =>
       import('./features/teacher/teacher.routes').then(m => m.routes)
   },
@@ -25,9 +24,9 @@ export const routes: Routes = [
       import('./features/public/public.routes').then(m => m.routes)
   },
 
-  { path: 'list/:title', component: FeatureListComponent },
+  { path: 'list/:title', canActivate: [authGuard], component: FeatureListComponent },
 
 
 
-  { path: '**', redirectTo: 'public/splash' }
+  { path: '', redirectTo: 'public', pathMatch: 'full' },
 ];
