@@ -1,4 +1,5 @@
 import e from "express";
+import { UserRole } from "./shared.enum";
 
 export interface Student {
   id?: number;
@@ -36,7 +37,7 @@ export interface RegisterData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: 'student' | 'admin' | 'teacher';
+  role: UserRole
 }
 
 export interface NavItem {
@@ -51,6 +52,8 @@ export interface UserDetail {
   firstName: string;
   lastName: string;
   email: string;
+  role: UserRole;
+
 }
 
 export interface CourseDetail {

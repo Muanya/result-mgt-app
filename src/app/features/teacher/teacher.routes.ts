@@ -13,6 +13,5 @@ export const routes: Routes = [
     { path: 'enrollment-detail/:id', component: EnrollmentDetailComponent },
     { path: 'grade-dist', component: GradeDistributionComponent },
     { path: 'result-entry/:id', component: ResultEntryComponent },
-
 ];
 

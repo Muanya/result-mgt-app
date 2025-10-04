@@ -1,6 +1,11 @@
 <app-navbar [navItems]="menu"></app-navbar>
 
-<app-entity-list
-  [title]="title"
-  [data]="entityData">
+@if (entityData$ | async; as entityData) {
+<app-entity-list [title]="title" [data]="entityData">
 </app-entity-list>
+} @else {
+<div class="loading-placeholder">
+  <p *ngIf="isBrowser">Loading...</p>
+  <p *ngIf="!isBrowser">Data will load in the browser.</p>
+</div>
+}

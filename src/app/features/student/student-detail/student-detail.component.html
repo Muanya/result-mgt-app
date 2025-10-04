@@ -1,6 +1,7 @@
-<app-navbar></app-navbar>
+<app-navbar [navItems]="menu"></app-navbar>
 <div class="student-container">
   <!-- Student Info -->
+  @if (student$ | async; as student) {
   <mat-card class="student-card">
     <mat-card-header>
       <img mat-card-avatar [src]="student.image" alt="student photo" />
@@ -12,7 +13,9 @@
       <p><strong>Email:</strong> {{ student.email }}</p>
     </mat-card-content>
   </mat-card>
+  }
 
+  @if (results$ | async; as results) {
   <!-- Student Results -->
   <mat-card class="results-card">
     <mat-card-title>Results</mat-card-title>
@@ -35,4 +38,6 @@
       <tr mat-row *matRowDef="let row; columns: ['course','grade'];"></tr>
     </table>
   </mat-card>
+
+}
 </div>

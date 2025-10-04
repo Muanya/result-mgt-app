@@ -16,7 +16,7 @@ export class ApiService {
   private getHeaders() {
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': '*/*'
+      'Accept': 'application/json',
     });
   }
 
@@ -44,6 +44,10 @@ export class ApiService {
 
   refreshToken<T>() {
     return this.postData('v1/auth/refresh', {}) as Observable<AuthResponse>;
+  }
+
+  getUserProfile(): Observable<any> {
+    return this.getData('v1/auth/me') as Observable<any>;
   }
 
   getAllCourses(): Observable<any[]> {

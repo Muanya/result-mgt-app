@@ -9,7 +9,6 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
 import { catchError, forkJoin, map, Observable, of, Subject, takeUntil, tap } from 'rxjs';
-import { MatLineModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-course-detail',

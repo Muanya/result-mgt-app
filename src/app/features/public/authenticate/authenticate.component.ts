@@ -7,6 +7,7 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { take } from 'rxjs';
 import { Router } from '@angular/router';
 import { LoginData, RegisterData } from '../../../shared/models/shared.model';
+import { UserRole } from '../../../shared/models/shared.enum';
 
 @Component({
   selector: 'app-authenticate',
@@ -36,7 +37,7 @@ export class AuthenticateComponent implements OnInit {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'student'
+    role: UserRole.STUDENT,
   };
 
 
@@ -65,15 +66,21 @@ export class AuthenticateComponent implements OnInit {
 
     this.authService.login(this.loginData).pipe(take(1)).subscribe(result => {
       console.log('Login successful:', result);
-      this.router.navigate(['/student/']);
+      const userRole = this.authService.getUserRole()
+
+      if (userRole === UserRole.MAGISTER) {
+        this.router.navigate(['/teacher/']);
+
+      } else {
+        this.router.navigate(['/student/']);
+
+      }
     })
   };
 
   // Register function
   register(event: Event) {
     event.preventDefault();
-
-    console.log('Register data:', this.registerData);
 
     // Check if passwords match
     if (this.registerData.password !== this.registerData.confirmPassword) {
@@ -83,7 +90,14 @@ export class AuthenticateComponent implements OnInit {
 
     this.authService.register(this.registerData).pipe(take(1)).subscribe(result => {
       console.log('Register successful:', result);
-      this.router.navigate(['/student/']);
+      const userRole = this.authService.getUserRole()
+
+      if (userRole === UserRole.MAGISTER) {
+        this.router.navigate(['/teacher/']);
+
+      } else {
+        this.router.navigate(['/student/']);
+      }
     })
 
 
