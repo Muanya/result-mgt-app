@@ -1,0 +1,89 @@
+ <div class="content">
+      <!-- Quick Actions -->
+      <div class="quick-actions-section">
+        <h3 class="section-title">Quick Actions</h3>
+        <div class="quick-actions-grid">
+          <button mat-raised-button 
+                  *ngFor="let action of quickActions"
+                  [color]="action.color"
+                  class="quick-action-btn"
+                  (click)="onQuickAction(action.label)">
+            <mat-icon>{{action.icon}}</mat-icon>
+            <span>{{action.label}}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="stats-section">
+        <h3 class="section-title">Overview</h3>
+        <div class="stats-grid">
+          <mat-card *ngFor="let card of statCards" 
+                   class="stat-card"
+                   [class]="card.color">
+            <mat-card-content>
+              <div class="stat-header">
+                <div class="stat-icon-container">
+                  <mat-icon class="stat-icon">{{card.icon}}</mat-icon>
+                </div>
+                <div class="stat-values">
+                  <div class="stat-value">{{card.value}}</div>
+                  <div class="stat-title">{{card.title}}</div>
+                </div>
+              </div>
+              <div class="stat-change" [class]="getChangeClass(card.change)">
+                <mat-icon class="change-icon">{{getChangeIcon(card.change)}}</mat-icon>
+                <span class="change-value">{{card.change >= 0 ? '+' : ''}}{{card.change}}%</span>
+                <span class="change-desc">{{card.description}}</span>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+
+      <!-- Recent Activities & Charts -->
+      <div class="content-grid">
+        <!-- Recent Activities -->
+        <mat-card class="activity-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>update</mat-icon>
+              Recent Activities
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="activity-list">
+              <div *ngFor="let activity of recentActivities" class="activity-item">
+                <div class="activity-icon" [class]="activity.color">
+                  <mat-icon>{{activity.icon}}</mat-icon>
+                </div>
+                <div class="activity-content">
+                  <div class="activity-title">{{activity.title}}</div>
+                  <div class="activity-desc">{{activity.description}}</div>
+                  <div class="activity-time">{{activity.time}}</div>
+                </div>
+              </div>
+            </div>
+          </mat-card-content>
+        </mat-card>
+
+        <!-- Performance Chart -->
+        <mat-card class="chart-card">
+          <mat-card-header>
+            <mat-card-title>
+              <mat-icon>trending_up</mat-icon>
+              Performance Trends
+            </mat-card-title>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="chart-placeholder">
+              <mat-icon>bar_chart</mat-icon>
+              <p>Performance chart will be displayed here</p>
+              <button mat-raised-button color="primary">
+                View Detailed Report
+              </button>
+            </div>
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>

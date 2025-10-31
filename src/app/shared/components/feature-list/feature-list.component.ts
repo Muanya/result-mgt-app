@@ -2,11 +2,9 @@ import { Component, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
 import { EntityListData, NavItem, Student } from '../../models/shared.model';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { StudentService } from '../../../services/student/student.service';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { NavbarComponent } from "../navbar/navbar.component";
 import { MatInputModule } from '@angular/material/input';
 import { AuthService } from '../../../services/auth/auth.service';
 import { map, Observable, of, take } from 'rxjs';
@@ -24,7 +22,7 @@ import { ApiService } from '../../../services/api/api.service';
     MatFormFieldModule,
     MatPaginatorModule,
     MatInputModule,
-    RouterModule, NavbarComponent, EntityListComponent],
+    RouterModule, EntityListComponent],
 })
 export class FeatureListComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -35,18 +33,6 @@ export class FeatureListComponent {
   isBrowser = false;
 
   title = "";
-
-  menu: NavItem[] = [
-    // { label: 'Home', route: '/' },
-
-    {
-      label: 'Profile',
-      children: [
-        { label: 'My Profile', route: '/profile' },
-        { label: 'Logout', action: () => this.logout() }
-      ]
-    }
-  ];
 
   entityData$!: Observable<EntityListData[]>;
   // entityData: EntityListData[] = [];

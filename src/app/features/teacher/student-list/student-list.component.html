@@ -1,0 +1,260 @@
+<!-- students.component.html -->
+<div class="students-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <h1>Student Management</h1>
+        <p>Manage student records, enrollment, and information</p>
+      </div>
+      <button mat-raised-button color="primary" (click)="addStudent()" class="add-btn">
+        <mat-icon>person_add</mat-icon>
+        Add Student
+      </button>
+    </div>
+  </div>
+
+  <!-- Action Bar -->
+  <div class="action-bar">
+    <div class="action-left">
+      <button mat-stroked-button (click)="toggleFilterPanel()" class="filter-btn">
+        <mat-icon>filter_list</mat-icon>
+        Filters
+        <span *ngIf="showFilterPanel" class="filter-indicator"></span>
+      </button>
+
+      <button mat-stroked-button (click)="exportStudents()" [disabled]="dataSource.data.length === 0">
+        <mat-icon>download</mat-icon>
+        Export
+      </button>
+
+      <button mat-stroked-button 
+              color="warn" 
+              (click)="deleteSelected()" 
+              [disabled]="selection.isEmpty()"
+              class="delete-btn">
+        <mat-icon>delete</mat-icon>
+        Delete Selected
+      </button>
+    </div>
+
+    <div class="action-right">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search students...</mat-label>
+        <input matInput (keyup)="applyFilter()" placeholder="Search by name, email..." #input>
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <!-- Filter Panel -->
+  <div class="filter-panel" [class.expanded]="showFilterPanel">
+    <form [formGroup]="filterForm" class="filter-form">
+      <div class="filter-row">
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Name</mat-label>
+          <input matInput formControlName="name" placeholder="Student name">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Course</mat-label>
+          <mat-select formControlName="course">
+            <mat-option value="">All Courses</mat-option>
+            <mat-option *ngFor="let course of courses" [value]="course">
+              {{ course }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Status</mat-label>
+          <mat-select formControlName="status">
+            <mat-option value="">All Statuses</mat-option>
+            <mat-option *ngFor="let status of statuses" [value]="status.value">
+              {{ status.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="filter-field">
+          <mat-label>Grade</mat-label>
+          <mat-select formControlName="grade">
+            <mat-option value="">All Grades</mat-option>
+            <mat-option value="A">A</mat-option>
+            <mat-option value="A-">A-</mat-option>
+            <mat-option value="B+">B+</mat-option>
+            <mat-option value="B">B</mat-option>
+            <mat-option value="B-">B-</mat-option>
+            <mat-option value="C+">C+</mat-option>
+            <mat-option value="C">C</mat-option>
+            <mat-option value="D">D</mat-option>
+            <mat-option value="F">F</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      <div class="filter-actions">
+        <button mat-stroked-button type="button" (click)="clearFilters()">
+          <mat-icon>clear</mat-icon>
+          Clear
+        </button>
+        <button mat-raised-button color="primary" type="button" (click)="applyFilter()">
+          <mat-icon>check</mat-icon>
+          Apply Filters
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Students Table -->
+  <div class="table-container">
+    <mat-table [dataSource]="dataSource" matSort class="students-table">
+      
+      <!-- Select Column -->
+      <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="toggleAllRows()"
+                        [checked]="isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (change)="selection.toggle(row)"
+                        [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Student Name</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          <div class="student-info">
+            <div class="avatar" [style.background-color]="getAvatarColor(student.name)">
+              {{ student.avatar }}
+            </div>
+            <div class="student-details">
+              <div class="student-name">{{ student.name }}</div>
+              <div class="student-id">{{ student.id }}</div>
+            </div>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Email Column -->
+      <ng-container matColumnDef="email">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Email</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          <div class="email-cell">
+            <mat-icon class="email-icon">email</mat-icon>
+            {{ student.email }}
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Phone Column -->
+      <ng-container matColumnDef="phone">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Phone</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          <div class="phone-cell">
+            <mat-icon class="phone-icon">phone</mat-icon>
+            {{ student.phone }}
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Course Column -->
+      <ng-container matColumnDef="course">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Course</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          <span class="course-badge">{{ student.course }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Enrollment Date Column -->
+      <ng-container matColumnDef="enrollmentDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Enrollment Date</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          {{ student.enrollmentDate | date:'MMM d, y' }}
+        </mat-cell>
+      </ng-container>
+
+      <!-- Status Column -->
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          <mat-chip [color]="getStatusColor(student.status)" selected>
+            {{ getStatusLabel(student.status) }}
+          </mat-chip>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Grade Column -->
+      <ng-container matColumnDef="grade">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Grade</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          <div class="grade-cell" [class]="'grade-' + student.grade">
+            {{ student.grade }}
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <!-- Actions Column -->
+      <ng-container matColumnDef="actions">
+        <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+        <mat-cell *matCellDef="let student">
+          <div class="action-buttons">
+            <button mat-icon-button color="primary" 
+                    (click)="viewStudent(student)"
+                    matTooltip="View Details">
+              <mat-icon>visibility</mat-icon>
+            </button>
+            <button mat-icon-button color="accent"
+                    (click)="editStudent(student)"
+                    matTooltip="Edit Student">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button mat-icon-button color="warn"
+                    (click)="deleteStudent(student)"
+                    matTooltip="Delete Student">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;" 
+               [class.selected]="selection.isSelected(row)"
+               (click)="selection.toggle(row)">
+      </mat-row>
+    </mat-table>
+
+    <!-- Empty State -->
+    <div *ngIf="dataSource.filteredData.length === 0" class="empty-state">
+      <mat-icon class="empty-icon">school</mat-icon>
+      <h3>No students found</h3>
+      <p>Try adjusting your search or filters to find what you're looking for.</p>
+      <button mat-raised-button color="primary" (click)="clearFilters()">
+        Clear Filters
+      </button>
+    </div>
+
+    <!-- Paginator -->
+    <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" 
+                   showFirstLastButtons
+                   aria-label="Select page of students">
+    </mat-paginator>
+  </div>
+
+  <!-- Selection Summary -->
+  <div class="selection-summary" [class.visible]="selection.hasValue()">
+    <div class="summary-content">
+      <span>{{ selection.selected.length }} student(s) selected</span>
+      <button mat-icon-button (click)="selection.clear()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
