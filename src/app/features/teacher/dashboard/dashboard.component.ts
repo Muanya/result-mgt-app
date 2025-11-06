@@ -3,12 +3,14 @@ import { Component } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
+import { TimeAgoPipe } from '../../../core/pipes/time-ago';
+import { Router } from '@angular/router';
 
 interface Activity {
   icon: string;
   title: string;
   description: string;
-  time: string;
+  time: Date;
   color: string;
 }
 
@@ -16,9 +18,8 @@ interface StatCard {
   title: string;
   value: number | string;
   icon: string;
-  color: string;
-  change: number;
-  description: string;
+  color?: string | null;
+  change?: number | null;
 }
 
 
@@ -30,6 +31,7 @@ interface StatCard {
     MatIconModule,
     MatCardModule,
     MatButtonModule,
+    TimeAgoPipe,
 
   ],
   templateUrl: './dashboard.component.html',
@@ -41,28 +43,28 @@ export class DashboardComponent {
       icon: 'person_add',
       title: 'New Student Registration',
       description: 'Sarah Johnson enrolled in Computer Science',
-      time: '2 hours ago',
+      time: new Date('2025-11-01T10:10:00'),
       color: 'primary'
     },
     {
       icon: 'assignment_turned_in',
       title: 'Results Published',
       description: 'Mathematics Spring 2023 results are available',
-      time: '5 hours ago',
+      time: new Date('2025-11-01T10:10:00'),
       color: 'accent'
     },
     {
       icon: 'library_add',
       title: 'New Course Added',
       description: 'Introduction to Artificial Intelligence',
-      time: 'Yesterday',
+      time: new Date('2025-11-01T10:10:00'),
       color: 'warn'
     },
     {
       icon: 'event_available',
       title: 'Attendance Alert',
       description: 'Low attendance reported for Physics 101',
-      time: '2 days ago',
+      time: new Date('2025-10-03T10:10:00'),
       color: 'success'
     }
   ];
@@ -71,34 +73,28 @@ export class DashboardComponent {
     { icon: 'person_add', label: 'Add Student', color: 'primary' },
     { icon: 'library_add', label: 'Create Course', color: 'accent' },
     { icon: 'assignment', label: 'Enter Results', color: 'warn' },
-    { icon: 'notifications', label: 'Send Alert', color: 'success' }
+    // { icon: 'notifications', label: 'Send Alert', color: 'success' }
   ];
 
 
-   statCards: StatCard[] = [
+  statCards: StatCard[] = [
     {
       title: 'Total Students',
       value: '1,248',
       icon: 'people',
       color: 'primary',
-      change: 12.5,
-      description: 'Since last month'
     },
     {
       title: 'Active Courses',
       value: 42,
       icon: 'book',
       color: 'accent',
-      change: 3.2,
-      description: '3 new this month'
     },
     {
-      title: 'Results Published',
-      value: '86%',
-      icon: 'bar_chart',
+      title: 'Total Enrollments',
+      value: '59',
+      icon: 'co_present',
       color: 'warn',
-      change: -2.1,
-      description: 'From last term'
     },
     {
       title: 'Attendance Rate',
@@ -106,15 +102,16 @@ export class DashboardComponent {
       icon: 'event_available',
       color: 'success',
       change: 1.8,
-      description: 'This week average'
     }
   ];
 
-  constructor() { }
+  constructor(private router: Router) { }
 
   onQuickAction(action: string) {
     console.log('Quick action:', action);
-    // Implement quick action logic here
+    if (action === 'Add Student') {
+      this.router.navigate(['/teacher/students/add']);
+    }
   }
 
 

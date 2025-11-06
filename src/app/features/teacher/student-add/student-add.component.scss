@@ -1,0 +1,368 @@
+
+.add-student-container {
+  padding: 0;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+// Header Styles
+.page-header {
+  background: white;
+  padding: 24px;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 24px;
+
+  .header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .header-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      .back-btn {
+        margin-right: 8px;
+      }
+
+      h1 {
+        margin: 0 0 4px 0;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1e293b;
+      }
+
+      p {
+        margin: 0;
+        color: #64748b;
+        font-size: 16px;
+      }
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 12px;
+
+      .cancel-btn {
+        padding: 8px 24px;
+      }
+
+      .submit-btn {
+        padding: 8px 24px;
+
+        mat-spinner {
+          margin: 0 8px;
+        }
+      }
+    }
+  }
+}
+
+// Stepper Styles
+.form-stepper {
+  max-width: 1200px;
+  margin: 0 auto 24px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+
+  ::ng-deep .mat-stepper-header {
+    padding: 0 24px;
+    height: 72px;
+
+    .mat-step-label {
+      font-weight: 500;
+    }
+
+    .mat-step-icon {
+      background-color: #cbd5e1;
+      color: #64748b;
+
+      &.mat-step-icon-selected {
+        background-color: #3f51b5;
+        color: white;
+      }
+
+      &.mat-step-icon-state-edit {
+        background-color: #3f51b5;
+        color: white;
+      }
+    }
+  }
+
+  ::ng-deep .mat-stepper-horizontal-line {
+    border-top-color: #e2e8f0;
+  }
+}
+
+// Step Content Styles
+.step-content {
+  padding: 32px;
+
+  .step-header {
+    margin-bottom: 32px;
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    p {
+      margin: 0;
+      color: #64748b;
+      font-size: 16px;
+    }
+  }
+}
+
+// Form Section Styles
+.form-section {
+  margin-bottom: 32px;
+
+  .section-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 20px 0;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #e3f2fd;
+  }
+}
+
+// Form Grid Layout
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  align-items: start;
+
+  .form-field {
+    width: 100;
+
+    &.full-width {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+// Form Field Styles
+.form-field {
+  mat-icon[matSuffix] {
+    color: #64748b;
+  }
+
+  mat-hint {
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  mat-error {
+    font-size: 12px;
+  }
+}
+
+// Course Summary Styles
+.course-summary {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 16px;
+
+  h4 {
+    margin: 0 0 16px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+
+      .label {
+        font-weight: 500;
+        color: #64748b;
+      }
+
+      .value {
+        font-weight: 600;
+        color: #1e293b;
+
+        &.generated-id {
+          background: #e3f2fd;
+          color: #1976d2;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-family: 'Courier New', monospace;
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}
+
+// Step Actions Styles
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24px 32px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+
+  button {
+    padding: 8px 24px;
+    height: 48px;
+
+    mat-icon {
+      margin: 0 4px;
+    }
+  }
+}
+
+// Snackbar Styles
+::ng-deep .success-snackbar {
+  background: #4caf50;
+  color: white;
+
+  .mat-simple-snackbar-action {
+    color: #e8f5e9;
+  }
+}
+
+::ng-deep .error-snackbar {
+  background: #f44336;
+  color: white;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .page-header {
+    padding: 16px;
+
+    .header-content {
+      flex-direction: column;
+      gap: 16px;
+      align-items: stretch;
+
+      .header-title {
+        h1 {
+          font-size: 24px;
+        }
+      }
+
+      .header-actions {
+        justify-content: stretch;
+
+        button {
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .form-stepper {
+    margin: 0 16px 24px;
+    border-radius: 8px;
+
+    ::ng-deep .mat-stepper-header {
+      padding: 0 16px;
+
+      .mat-step-label {
+        display: none;
+      }
+    }
+  }
+
+  .step-content {
+    padding: 20px 16px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .step-actions {
+    padding: 20px 16px;
+    flex-direction: column-reverse;
+    gap: 12px;
+
+    button {
+      width: 100%;
+    }
+  }
+
+  .course-summary {
+    .summary-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .step-content {
+    padding: 16px 12px;
+  }
+
+  .form-section {
+    margin-bottom: 24px;
+  }
+}
+
+// Loading and State Styles
+.mat-spinner {
+  ::ng-deep circle {
+    stroke: currentColor;
+  }
+}
+
+// Focus and Hover States
+.form-field {
+  ::ng-deep .mat-form-field-outline-thick {
+    color: #3f51b5;
+  }
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+// Custom scroll for better UX
+.step-content {
+  max-height: calc(100vh - 300px);
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}

@@ -28,22 +28,11 @@
         Export
       </button>
 
-      <button mat-stroked-button 
-              color="warn" 
-              (click)="deleteSelected()" 
-              [disabled]="selection.isEmpty()"
-              class="delete-btn">
+      <button mat-stroked-button color="warn" (click)="deleteSelected()" [disabled]="selection.isEmpty()"
+        class="delete-btn">
         <mat-icon>delete</mat-icon>
         Delete Selected
       </button>
-    </div>
-
-    <div class="action-right">
-      <mat-form-field appearance="outline" class="search-field">
-        <mat-label>Search students...</mat-label>
-        <input matInput (keyup)="applyFilter()" placeholder="Search by name, email..." #input>
-        <mat-icon matSuffix>search</mat-icon>
-      </mat-form-field>
     </div>
   </div>
 
@@ -56,15 +45,7 @@
           <input matInput formControlName="name" placeholder="Student name">
         </mat-form-field>
 
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Course</mat-label>
-          <mat-select formControlName="course">
-            <mat-option value="">All Courses</mat-option>
-            <mat-option *ngFor="let course of courses" [value]="course">
-              {{ course }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
+
 
         <mat-form-field appearance="outline" class="filter-field">
           <mat-label>Status</mat-label>
@@ -73,22 +54,6 @@
             <mat-option *ngFor="let status of statuses" [value]="status.value">
               {{ status.label }}
             </mat-option>
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline" class="filter-field">
-          <mat-label>Grade</mat-label>
-          <mat-select formControlName="grade">
-            <mat-option value="">All Grades</mat-option>
-            <mat-option value="A">A</mat-option>
-            <mat-option value="A-">A-</mat-option>
-            <mat-option value="B+">B+</mat-option>
-            <mat-option value="B">B</mat-option>
-            <mat-option value="B-">B-</mat-option>
-            <mat-option value="C+">C+</mat-option>
-            <mat-option value="C">C</mat-option>
-            <mat-option value="D">D</mat-option>
-            <mat-option value="F">F</mat-option>
           </mat-select>
         </mat-form-field>
       </div>
@@ -109,19 +74,17 @@
   <!-- Students Table -->
   <div class="table-container">
     <mat-table [dataSource]="dataSource" matSort class="students-table">
-      
+
       <!-- Select Column -->
       <ng-container matColumnDef="select">
         <mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (change)="toggleAllRows()"
-                        [checked]="isAllSelected()"
-                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          <mat-checkbox (change)="toggleAllRows()" [checked]="isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()">
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-          <mat-checkbox (click)="$event.stopPropagation()"
-                        (change)="selection.toggle(row)"
-                        [checked]="selection.isSelected(row)">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="selection.toggle(row)"
+            [checked]="selection.isSelected(row)">
           </mat-checkbox>
         </mat-cell>
       </ng-container>
@@ -164,14 +127,6 @@
         </mat-cell>
       </ng-container>
 
-      <!-- Course Column -->
-      <ng-container matColumnDef="course">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Course</mat-header-cell>
-        <mat-cell *matCellDef="let student">
-          <span class="course-badge">{{ student.course }}</span>
-        </mat-cell>
-      </ng-container>
-
       <!-- Enrollment Date Column -->
       <ng-container matColumnDef="enrollmentDate">
         <mat-header-cell *matHeaderCellDef mat-sort-header>Enrollment Date</mat-header-cell>
@@ -190,34 +145,19 @@
         </mat-cell>
       </ng-container>
 
-      <!-- Grade Column -->
-      <ng-container matColumnDef="grade">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>Grade</mat-header-cell>
-        <mat-cell *matCellDef="let student">
-          <div class="grade-cell" [class]="'grade-' + student.grade">
-            {{ student.grade }}
-          </div>
-        </mat-cell>
-      </ng-container>
 
       <!-- Actions Column -->
       <ng-container matColumnDef="actions">
         <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
         <mat-cell *matCellDef="let student">
           <div class="action-buttons">
-            <button mat-icon-button color="primary" 
-                    (click)="viewStudent(student)"
-                    matTooltip="View Details">
+            <button mat-icon-button color="primary" (click)="viewStudent(student)" matTooltip="View Details">
               <mat-icon>visibility</mat-icon>
             </button>
-            <button mat-icon-button color="accent"
-                    (click)="editStudent(student)"
-                    matTooltip="Edit Student">
+            <button mat-icon-button color="accent" (click)="editStudent(student)" matTooltip="Edit Student">
               <mat-icon>edit</mat-icon>
             </button>
-            <button mat-icon-button color="warn"
-                    (click)="deleteStudent(student)"
-                    matTooltip="Delete Student">
+            <button mat-icon-button color="warn" (click)="deleteStudent(student)" matTooltip="Delete Student">
               <mat-icon>delete</mat-icon>
             </button>
           </div>
@@ -225,9 +165,8 @@
       </ng-container>
 
       <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-      <mat-row *matRowDef="let row; columns: displayedColumns;" 
-               [class.selected]="selection.isSelected(row)"
-               (click)="selection.toggle(row)">
+      <mat-row *matRowDef="let row; columns: displayedColumns;" [class.selected]="selection.isSelected(row)"
+        (click)="selection.toggle(row)">
       </mat-row>
     </mat-table>
 
@@ -242,9 +181,8 @@
     </div>
 
     <!-- Paginator -->
-    <mat-paginator [pageSizeOptions]="[5, 10, 20, 50]" 
-                   showFirstLastButtons
-                   aria-label="Select page of students">
+    <mat-paginator [length]="totalItems" [pageSize]="pageSize" [pageSizeOptions]="[2, 5, 10, 20, 50]" showFirstLastButtons
+      aria-label="Select page of students">
     </mat-paginator>
   </div>
 

@@ -21,8 +21,8 @@ export class ApiService {
   }
 
 
-  getData(endpoint: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${endpoint}`, { headers: this.getHeaders(), withCredentials: true });
+  getData(endpoint: string, params?: HttpParams): Observable<any> {
+    return this.http.get(`${this.baseUrl}/${endpoint}`, { headers: this.getHeaders(), withCredentials: true, params });
   }
 
   postData(endpoint: string, body?: any): Observable<any> {
@@ -62,6 +62,17 @@ export class ApiService {
     return this.getData('api/students');
   }
 
+  getAllStudentsByArgs(courseId?: number, enrollmentId?: number): Observable<any[]> {
+    let params = new HttpParams();
+    if (courseId) params = params.set('courseId', courseId.toString());
+    if (enrollmentId) params = params.set('enrollmentId', enrollmentId.toString());
+    return this.getData('api/students', params);
+  }
+
+  getStudentById(id: number): Observable<any> {
+    return this.getData(`api/students/${id}`);
+  }
+
   getAllMagisters(): Observable<any[]> {
     return this.getData('api/magisters');
   }
@@ -82,8 +93,15 @@ export class ApiService {
     return this.postData('api/results/bulk', results);
   }
 
-  getResultsByEnrollment(enrollmentId: number): Observable<any[]> {
-    return this.getData(`api/results/enrollment/${enrollmentId}`);
+  getResultsByEnrollmentForGivenStudents(reqData: { enrollmentId?: number, courseId?: number, studentIds: number[] }): Observable<any[]> {
+    return this.postData(`api/results/enrollment`, reqData);
+  }
+
+  getResultsByEnrollment(enrollmentId?: number, courseId?: number): Observable<any[]> {
+    let params = new HttpParams()
+    if (courseId) params = params.set('courseId', courseId.toString());
+    if (enrollmentId) params = params.set('enrollmentId', enrollmentId.toString());
+    return this.getData(`api/results/enrollment`, params);
   }
 
   getResultsByStudent(studentId: number): Observable<any[]> {

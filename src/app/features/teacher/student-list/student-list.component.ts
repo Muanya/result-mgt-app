@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
-import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
 import { MatDialog } from '@angular/material/dialog';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -12,21 +12,21 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatChip } from '@angular/material/chips';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
+import { Observable, take, map } from 'rxjs';
+import { ApiService } from '../../../services/api/api.service';
+import { EntityListData } from '../../../shared/models/shared.model';
+import { Router } from '@angular/router';
 
 export interface Student {
   id: string;
   name: string;
   email: string;
   phone: string;
-  course: string;
   enrollmentDate: Date;
   status: 'active' | 'inactive' | 'graduated';
-  grade: string;
   avatar?: string;
-  address: string;
   dateOfBirth: Date;
-  guardianName: string;
-  guardianPhone: string;
+
 }
 
 
@@ -57,17 +57,18 @@ export class StudentListComponent {
     'name',
     'email',
     'phone',
-    'course',
     'enrollmentDate',
     'status',
-    'grade',
     'actions'
   ];
 
-  dataSource: MatTableDataSource<Student>;
+  dataSource = new MatTableDataSource<Student>([]);
   selection = new SelectionModel<Student>(true, []);
   filterForm: FormGroup;
   showFilterPanel = false;
+  totalItems = 0;
+  pageSize = 10;
+  pageIndex = 0;
 
   // Sample data
   students: Student[] = [
@@ -76,90 +77,66 @@ export class StudentListComponent {
       name: 'John Smith',
       email: 'john.smith@university.edu',
       phone: '+1 (555) 123-4567',
-      course: 'Computer Science',
       enrollmentDate: new Date('2022-09-01'),
       status: 'active',
-      grade: 'A',
       avatar: 'JS',
-      address: '123 Main St, Boston, MA',
       dateOfBirth: new Date('2000-05-15'),
-      guardianName: 'Robert Smith',
-      guardianPhone: '+1 (555) 987-6543'
+
     },
     {
       id: 'STU002',
       name: 'Sarah Johnson',
       email: 'sarah.j@university.edu',
       phone: '+1 (555) 234-5678',
-      course: 'Mathematics',
       enrollmentDate: new Date('2022-09-01'),
       status: 'active',
-      grade: 'A-',
       avatar: 'SJ',
-      address: '456 Oak Ave, Cambridge, MA',
       dateOfBirth: new Date('2001-03-22'),
-      guardianName: 'Michael Johnson',
-      guardianPhone: '+1 (555) 876-5432'
+
     },
     {
       id: 'STU003',
       name: 'Michael Brown',
       email: 'm.brown@university.edu',
       phone: '+1 (555) 345-6789',
-      course: 'Physics',
       enrollmentDate: new Date('2021-09-01'),
       status: 'graduated',
-      grade: 'B+',
       avatar: 'MB',
-      address: '789 Pine Rd, Newton, MA',
       dateOfBirth: new Date('1999-11-30'),
-      guardianName: 'David Brown',
-      guardianPhone: '+1 (555) 765-4321'
+
     },
     {
       id: 'STU004',
       name: 'Emily Davis',
       email: 'emily.davis@university.edu',
       phone: '+1 (555) 456-7890',
-      course: 'Biology',
       enrollmentDate: new Date('2023-01-15'),
       status: 'active',
-      grade: 'A',
       avatar: 'ED',
-      address: '321 Elm St, Quincy, MA',
       dateOfBirth: new Date('2002-07-18'),
-      guardianName: 'James Davis',
-      guardianPhone: '+1 (555) 654-3210'
+
     },
     {
       id: 'STU005',
       name: 'David Wilson',
       email: 'd.wilson@university.edu',
       phone: '+1 (555) 567-8901',
-      course: 'Chemistry',
       enrollmentDate: new Date('2022-09-01'),
       status: 'inactive',
-      grade: 'C+',
       avatar: 'DW',
-      address: '654 Maple Dr, Brookline, MA',
       dateOfBirth: new Date('2000-12-05'),
-      guardianName: 'Richard Wilson',
-      guardianPhone: '+1 (555) 543-2109'
+
     },
     {
       id: 'STU006',
       name: 'Jennifer Lee',
       email: 'j.lee@university.edu',
       phone: '+1 (555) 678-9012',
-      course: 'Computer Science',
       enrollmentDate: new Date('2023-01-15'),
       status: 'active',
-      grade: 'A-',
       avatar: 'JL',
-      address: '987 Cedar Ln, Somerville, MA',
       dateOfBirth: new Date('2001-09-12'),
-      guardianName: 'Thomas Lee',
-      guardianPhone: '+1 (555) 432-1098'
+
     }
   ];
 
@@ -181,28 +158,75 @@ export class StudentListComponent {
 
   constructor(
     private fb: FormBuilder,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private apiService: ApiService,
+    private router: Router
   ) {
-    this.dataSource = new MatTableDataSource(this.students);
+    // this.dataSource = new MatTableDataSource(this.students);
     this.filterForm = this.createFilterForm();
   }
 
-  ngOnInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+  ngOnInit(): void {
+    this.fetchStudents();
+
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
+
+    // React to sort changes
+    this.sort.sortChange.subscribe((sort: Sort) => {
+      this.pageIndex = 0; // reset page on sort
+      this.fetchStudents();
+    });
+
+    // React to pagination
+    this.paginator.page.subscribe((event: PageEvent) => {
+      this.pageIndex = event.pageIndex;
+      this.pageSize = event.pageSize;
+      this.fetchStudents();
+    });
   }
+
+
+  fetchStudents(): void {
+    const search = this.filterForm.get('search')?.value || '';
+    const sortActive = this.sort?.active || 'name';
+    const sortDirection = this.sort?.direction || 'asc';
+
+    this.loadStudents(this.pageIndex, this.pageSize, search, sortActive, sortDirection)
+      .subscribe(students => {
+        this.students = students;
+        this.dataSource.data = this.students;
+        this.totalItems = students.length;
+      });
+  }
+
+  loadStudents(page = 0, size = 20,
+     search = '',
+    sortBy = 'name',
+    sortDir: 'asc' | 'desc' = 'asc'): Observable<Student[]> {
+    return this.apiService.getAllStudents().pipe(
+      take(1),
+      map(res => res.map((data: { firstName: any; lastName: any; email: any; }) =>
+      ({
+        name: `${data.firstName} ${data.lastName}`, email: data.email, phone: '+1 (555) 678-9012',
+        enrollmentDate: new Date('2023-01-15'),
+        status: 'active',
+        avatar: `${data.firstName.charAt(0)}${data.lastName.charAt(0)}  `,
+        dateOfBirth: new Date('2001-09-12'),
+      } as Student)
+      ))
+    );
+
+  }
+
 
   createFilterForm(): FormGroup {
     return this.fb.group({
       name: [''],
-      course: [''],
       status: [''],
-      grade: [''],
       dateRange: this.fb.group({
         start: [''],
         end: ['']
@@ -217,11 +241,9 @@ export class StudentListComponent {
       const filterObj = JSON.parse(filter);
       const nameMatch = !filterObj.name ||
         data.name.toLowerCase().includes(filterObj.name.toLowerCase());
-      const courseMatch = !filterObj.course || data.course === filterObj.course;
       const statusMatch = !filterObj.status || data.status === filterObj.status;
-      const gradeMatch = !filterObj.grade || data.grade === filterObj.grade;
 
-      return nameMatch && courseMatch && statusMatch && gradeMatch;
+      return nameMatch && statusMatch;
     };
 
     this.dataSource.filter = JSON.stringify(filters);
@@ -255,6 +277,7 @@ export class StudentListComponent {
   addStudent() {
     // Implement add student dialog
     console.log('Add student clicked');
+    this.router.navigate(['/teacher/students/add']);
   }
 
   editStudent(student: Student) {

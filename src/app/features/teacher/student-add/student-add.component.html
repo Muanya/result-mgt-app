@@ -1,0 +1,190 @@
+
+<div class="add-student-container">
+  <!-- Header -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-title">
+        <button mat-icon-button class="back-btn" (click)="onCancel()" matTooltip="Back to Students">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+        <div>
+          <h1>Add New Student</h1>
+          <p>Fill in the student information below</p>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <button mat-stroked-button (click)="onCancel()" class="cancel-btn">
+          Cancel
+        </button>
+        <button mat-raised-button 
+                color="primary" 
+                (click)="onSubmit()" 
+                [disabled]="isSubmitting"
+                class="submit-btn">
+          <mat-icon *ngIf="!isSubmitting">save</mat-icon>
+          <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+          {{ isSubmitting ? 'Saving...' : 'Save Student' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress Stepper -->
+  <mat-stepper linear #stepper class="form-stepper">
+    
+    <!-- Step 1: Personal Information -->
+    <mat-step [stepControl]="personalInfo" label="Personal Information">
+      <form [formGroup]="personalInfo">
+        <div class="step-content">
+          <div class="step-header">
+            <h2>Personal Information</h2>
+            <p>Basic details about the student</p>
+          </div>
+
+          <div class="form-grid">
+            <!-- Name Fields -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>First Name</mat-label>
+              <input matInput formControlName="firstName" placeholder="Enter first name">
+              <mat-icon matSuffix>person</mat-icon>
+              <mat-error *ngIf="personalInfo.get('firstName')?.hasError('required')">
+                First name is required
+              </mat-error>
+              <mat-error *ngIf="personalInfo.get('firstName')?.hasError('minlength')">
+                First name must be at least 2 characters
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Last Name</mat-label>
+              <input matInput formControlName="lastName" placeholder="Enter last name">
+              <mat-icon matSuffix>person</mat-icon>
+              <mat-error *ngIf="personalInfo.get('lastName')?.hasError('required')">
+                Last name is required
+              </mat-error>
+              <mat-error *ngIf="personalInfo.get('lastName')?.hasError('minlength')">
+                Last name must be at least 2 characters
+              </mat-error>
+            </mat-form-field>
+
+            <!-- Date of Birth and Gender -->
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Date of Birth</mat-label>
+              <input matInput 
+                     [matDatepicker]="dobPicker" 
+                     formControlName="dateOfBirth"
+                     [max]="maxBirthDate"
+                     [min]="minBirthDate">
+              <mat-datepicker-toggle matSuffix [for]="dobPicker"></mat-datepicker-toggle>
+              <mat-datepicker #dobPicker></mat-datepicker>
+              <mat-hint>
+                <span *ngIf="personalInfo.get('dateOfBirth')?.value">
+                  Age: {{ calculateAge(personalInfo.get('dateOfBirth')?.value) }} years
+                </span>
+              </mat-hint>
+              <mat-error *ngIf="personalInfo.get('dateOfBirth')?.hasError('required')">
+                Date of birth is required
+              </mat-error>
+              <mat-error *ngIf="personalInfo.get('dateOfBirth')?.hasError('invalidAge')">
+                Student must be between 16 and 60 years old
+              </mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Gender</mat-label>
+              <mat-select formControlName="gender" placeholder="Select gender">
+                <mat-option *ngFor="let gender of genders" [value]="gender">
+                  {{ gender }}
+                </mat-option>
+              </mat-select>
+              <mat-error *ngIf="personalInfo.get('gender')?.hasError('required')">
+                Gender is required
+              </mat-error>
+            </mat-form-field>
+
+
+            <mat-form-field appearance="outline" class="form-field">
+              <mat-label>Nationality</mat-label>
+              <input matInput formControlName="nationality" placeholder="Enter nationality">
+              <mat-icon matSuffix>flag</mat-icon>
+              <mat-error *ngIf="personalInfo.get('nationality')?.hasError('required')">
+                Nationality is required
+              </mat-error>
+            </mat-form-field>
+
+          </div>
+        </div>
+
+        <div class="step-actions">
+          <button mat-stroked-button type="button" (click)="onCancel()">
+            Cancel
+          </button>
+          <button mat-raised-button matStepperNext color="primary" (click)="nextStep()">
+            Next: Contact Information
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+    <!-- Step 2: Contact Information -->
+    <mat-step [stepControl]="contactInfo" label="Contact Information">
+      <form [formGroup]="contactInfo">
+        <div class="step-content">
+          <div class="step-header">
+            <h2>Contact Information</h2>
+            <p>How to reach the student and emergency contacts</p>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Primary Contact</h3>
+            <div class="form-grid">
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Email Address</mat-label>
+                <input matInput formControlName="email" type="email" placeholder="student@email.com">
+                <mat-icon matSuffix>email</mat-icon>
+                <mat-error *ngIf="contactInfo.get('email')?.hasError('required')">
+                  Email is required
+                </mat-error>
+                <mat-error *ngIf="contactInfo.get('email')?.hasError('email')">
+                  Please enter a valid email address
+                </mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Phone Number</mat-label>
+                <input matInput formControlName="phone" placeholder="+1 (555) 123-4567">
+                <mat-icon matSuffix>phone</mat-icon>
+                <mat-error *ngIf="contactInfo.get('phone')?.hasError('required')">
+                  Phone number is required
+                </mat-error>
+                <mat-error *ngIf="contactInfo.get('phone')?.hasError('pattern')">
+                  Please enter a valid phone number
+                </mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+
+        </div>
+          <div class="step-actions">
+          <button mat-stroked-button matStepperPrevious type="button" (click)="previousStep()">
+            <mat-icon>arrow_back</mat-icon>
+            Back
+          </button>
+          <button mat-raised-button 
+                  color="primary" 
+                  type="button"
+                  (click)="onSubmit()"
+                  [disabled]="isSubmitting">
+            <mat-icon *ngIf="!isSubmitting">save</mat-icon>
+            <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+            {{ isSubmitting ? 'Saving Student...' : 'Save Student' }}
+          </button>
+        </div>
+      </form>
+    </mat-step>
+
+
+  </mat-stepper>
+</div>

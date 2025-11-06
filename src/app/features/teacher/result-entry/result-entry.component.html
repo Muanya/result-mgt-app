@@ -1,50 +1,125 @@
-<div class="mass-container" *ngIf="students.length > 0; else loading">
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title>Add Results for All Students</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            <form [formGroup]="resultForm" (ngSubmit)="onSubmit()">
-                <table class="results-table">
-                    <thead>
-                        <tr>
-                            <th>Student</th>
-                            <th>Score</th>
-                            <th>Grade</th>
-                        </tr>
-                    </thead>
-                    <tbody formArrayName="results">
-                        <tr *ngFor="let group of results.controls; let i = index" [formGroupName]="i">
-                            <td>
-                                {{ students[i].firstName }} {{ students[i].lastName }}
-                            </td>
-                            <td>
-                                <mat-form-field>
-                                    <input matInput type="number" formControlName="score" />
-                                </mat-form-field>
-                            </td>
-                            <td>
-                                <mat-form-field appearance="fill">
-                                    <mat-label>Grade</mat-label>
-                                    <mat-select formControlName="grade">
-                                        <mat-option *ngFor="let grade of gradeOptions" [value]="grade">
-                                            {{ grade }}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+<form [formGroup]="resultForm">
+    <div class="step-content">
+        <div class="step-header">
+            <h2>Enter Grades and Marks</h2>
+            <p>Enter marks for selected students. Grades will be calculated automatically.</p>
+        </div>
 
-                <div class="actions">
-                    <button mat-raised-button color="primary" type="submit">Save All Results</button>
+
+
+        <!-- Grade Entry Table -->
+        <div class="table-container" *ngIf="results.length > 0">
+            <mat-table [dataSource]="results.controls" class="grades-table" formArrayName="results">
+
+                <!-- Student ID Column -->
+                <ng-container matColumnDef="studentId">
+                    <mat-header-cell *matHeaderCellDef>Student ID</mat-header-cell>
+                    <mat-cell *matCellDef="let entry; let i = index" [formGroupName]="i">{{
+                        entry.get('studentId')?.value }}</mat-cell>
+                </ng-container>
+
+                <!-- Student Name Column -->
+                <ng-container matColumnDef="studentName">
+                    <mat-header-cell *matHeaderCellDef>Student Name</mat-header-cell>
+                    <mat-cell *matCellDef="let entry; let i = index" [formGroupName]="i">{{ students[i].firstName }} {{ students[i].lastName }}</mat-cell>
+                </ng-container>
+
+                <!-- Marks Column -->
+                <ng-container matColumnDef="marks">
+                    <mat-header-cell *matHeaderCellDef>Score</mat-header-cell>
+                    <mat-cell *matCellDef="let entry; let i = index" [formGroupName]="i">
+                        <mat-form-field appearance="outline" class="marks-field">
+                            <input matInput type="number" formControlName="score"
+                                (change)="onMarksChange(i, $event)" min="0" placeholder="Enter marks" />
+                        </mat-form-field>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Grade Column -->
+                <ng-container matColumnDef="grade">
+                    <mat-header-cell *matHeaderCellDef>Grade</mat-header-cell>
+                    <mat-cell *matCellDef="let entry; let i = index" [formGroupName]="i">
+                        <mat-chip [color]="getGradeColor(entry.get('grade')?.value)" highlighted>
+                            {{ entry.get('grade')?.value }}
+                        </mat-chip>
+                    </mat-cell>
+                </ng-container>
+
+
+                <!-- Remarks Column -->
+                <ng-container matColumnDef="remarks">
+                    <mat-header-cell *matHeaderCellDef>Remarks</mat-header-cell>
+                    <mat-cell *matCellDef="let entry; let i = index" [formGroupName]="i">
+                        <mat-form-field appearance="outline" class="remarks-field">
+                            <input matInput placeholder="Add remarks" formControlName="remarks">
+                        </mat-form-field>
+                    </mat-cell>
+                </ng-container>
+
+                <!-- Actions Column -->
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+                    <mat-cell *matCellDef="let entry; let i = index" [formGroupName]="i">
+                        <button mat-icon-button color="warn"
+                            (click)="removeStudentFromGradeEntry(entry.get('studentId')?.value)"
+                            matTooltip="Remove student">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="gradeColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: gradeColumns;"></mat-row>
+            </mat-table>
+        </div>
+
+        <!-- Empty Grade Entry State -->
+        <div *ngIf="results.length === 0" class="empty-state">
+            <mat-icon class="empty-icon">grade</mat-icon>
+            <h3>No students selected for grade entry</h3>
+            <p>Go back to the previous step and select students</p>
+            <button mat-stroked-button matStepperPrevious (click)="goBack.emit()">
+                <mat-icon>arrow_back</mat-icon>
+                Back to Student Selection
+            </button>
+        </div>
+
+        <!-- Grade Summary -->
+        <div *ngIf="results.length > 0" class="grade-summary">
+            <h3>Grade Distribution</h3>
+            <div class="summary-stats">
+                <div class="stat-item">
+                    <span class="label">Total Students:</span>
+                    <span class="value">{{ results.length }}</span>
                 </div>
-            </form>
-        </mat-card-content>
-    </mat-card>
-</div>
+                <div class="stat-item">
+                    <span class="label">Passed:</span>
+                    <span class="value passed">{{ getNumberPassed() }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Failed:</span>
+                    <span class="value failed">{{ getNumberFailed() }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Pass Percentage:</span>
+                    <span class="value percentage">
+                        {{ getPassPercentage() | number:'1.1-1' }}%
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<ng-template #loading>
-    <div class="loading">Loading students...</div>
-</ng-template>
+    <div class="step-actions">
+        <button mat-stroked-button matStepperPrevious type="button" (click)="goBack.emit()">
+            <mat-icon>arrow_back</mat-icon>
+            Back
+        </button>
+        <button mat-raised-button color="primary" (click)="submitResults()"
+            [disabled]="!canSubmit() || isSubmitting" class="submit-btn">
+            <mat-icon *ngIf="!isSubmitting">save</mat-icon>
+            <mat-spinner diameter="20" *ngIf="isSubmitting"></mat-spinner>
+            {{ isSubmitting ? 'Submitting...' : 'Submit Results' }}
+        </button>
+    </div>
+</form>

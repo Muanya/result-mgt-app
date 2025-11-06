@@ -1,0 +1,213 @@
+<div class="enter-result-container">
+    <!-- Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-title">
+                <h1>Enter Results</h1>
+                <p>Enter and manage student examination results</p>
+            </div>
+            <div class="header-actions">
+                <button mat-stroked-button routerLink="/results" class="action-btn">
+                    <mat-icon>arrow_back</mat-icon>
+                    Back to Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Progress Stepper -->
+    <mat-stepper linear #stepper class="form-stepper">
+
+        <!-- Step 1: Course & Subject Selection -->
+        <mat-step [stepControl]="courseForm" label="Course & Subject">
+            <form [formGroup]="courseForm">
+                <div class="step-content">
+                    <div class="step-header">
+                        <h2>Select Course and Subject</h2>
+                        <p>Choose the course and subject for which you want to enter results</p>
+                    </div>
+
+                    <div class="form-grid">
+                        <!-- Course Selection -->
+                        <mat-form-field appearance="outline" class="form-field">
+                            <mat-label>Select Course</mat-label>
+                            <mat-select formControlName="course" placeholder="Choose a course">
+                                <mat-option *ngFor="let course of courses" [value]="course.id">
+                                    {{ course.title }} ({{ course.code }})
+                                </mat-option>
+                            </mat-select>
+                            <mat-icon matSuffix>school</mat-icon>
+                            <mat-error *ngIf="courseField?.hasError('required')">
+                                Course selection is required
+                            </mat-error>
+                        </mat-form-field>
+
+
+
+                        <!-- Subject Selection -->
+                        <mat-form-field appearance="outline" class="form-field">
+                            <mat-label>Select Enrollment</mat-label>
+                            <mat-select formControlName="enrollment" placeholder="Choose a subject">
+                                <mat-option *ngFor="let enrollment of enrollments" [value]="enrollment.id">
+                                    {{ enrollment.enrollmentName }}
+                                </mat-option>
+                            </mat-select>
+                            <mat-icon matSuffix>menu_book</mat-icon>
+                            <mat-error *ngIf="enrollmentField?.hasError('required')">
+                                Enrollment selection is required
+                            </mat-error>
+                        </mat-form-field>
+
+                    </div>
+
+                    <!-- Course Summary -->
+                    <div *ngIf="selectedCourse" class="course-summary">
+                        <h3>Course Summary</h3>
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <span class="label">Course:</span>
+                                <span class="value">{{ selectedCourse.title }}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Code:</span>
+                                <span class="value">{{ selectedCourse.code }}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Enrollment:</span>
+                                <span class="value">{{ selectedEnrollment?.enrollmentName }}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Instructors:</span>
+                                <span class="value">{{ getInstructorsForEnrollment() }}</span>
+                            </div>
+                            <div class="summary-item">
+                                <span class="label">Total Students:</span>
+                                <span class="value">{{ getTotalStudentsForEnrollment() }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button mat-stroked-button type="button" routerLink="/results">
+                        Cancel
+                    </button>
+                    <button mat-raised-button matStepperNext color="primary" (click)="nextStep()"
+                        [disabled]="!canProceedToNextStep()">
+                        Next: Select Students
+                        <mat-icon>arrow_forward</mat-icon>
+                    </button>
+                </div>
+            </form>
+        </mat-step>
+
+        <!-- Step 2: Student Selection -->
+        <mat-step label="Select Students">
+            <div class="step-content">
+                <div class="step-header">
+                    <h2>Select Students</h2>
+                    <p>Choose students for grade entry. You can select individual students or all students.</p>
+                </div>
+
+                <!-- Student Selection Actions -->
+                <div class="selection-actions">
+                    <div class="selection-info">
+                        <span *ngIf="selection.hasValue()" class="selected-count">
+                            {{ selection.selected.length }} student(s) selected
+                        </span>
+                        <button mat-stroked-button (click)="selection.clear()" *ngIf="selection.hasValue()">
+                            Clear Selection
+                        </button>
+                    </div>
+
+                    <div class="search-field">
+                        <mat-form-field appearance="outline">
+                            <mat-label>Search students...</mat-label>
+                            <input matInput (keyup)="applyStudentFilter($event)" placeholder="Search by name or ID">
+                            <mat-icon matSuffix>search</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <!-- Students Table -->
+                <div class="table-container">
+                    <mat-table [dataSource]="studentsDataSource" matSort class="students-table">
+
+                        <!-- Select Column -->
+                        <ng-container matColumnDef="select">
+                            <mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox (change)="toggleAllRows()" [checked]="isAllSelected()"
+                                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                                </mat-checkbox>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let student">
+                                <mat-checkbox (click)="$event.stopPropagation()" (change)="selection.toggle(student)"
+                                    [checked]="selection.isSelected(student)">
+                                </mat-checkbox>
+                            </mat-cell>
+                        </ng-container>
+
+                        <!-- Student ID Column -->
+                        <ng-container matColumnDef="studentId">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>Student ID</mat-header-cell>
+                            <mat-cell *matCellDef="let student">{{ student.id }}</mat-cell>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>Student Name</mat-header-cell>
+                            <mat-cell *matCellDef="let student">
+                                <div class="student-info">
+                                    <div class="avatar" [style.background-color]="getAvatarColor(student.firstName)">
+                                        {{ getStudentAvatar(student) }}
+                                    </div>
+                                    <div class="student-details">
+                                        <div class="student-name">{{ student.firstName }} {{ student.lastName }}</div>
+                                        <div class="student-email">{{ student.email }}</div>
+                                    </div>
+                                </div>
+                            </mat-cell>
+                        </ng-container>
+
+
+
+
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"
+                            [class.selected]="selection.isSelected(row)">
+                        </mat-row>
+                    </mat-table>
+
+                    <!-- Empty State -->
+                    <div *ngIf="studentsDataSource.filteredData.length === 0" class="empty-state">
+                        <mat-icon class="empty-icon">school</mat-icon>
+                        <h3>No students found</h3>
+                        <p>Try adjusting your search criteria</p>
+                    </div>
+
+                    <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
+
+            <div class="step-actions">
+                <button mat-stroked-button type="button" (click)="previousStep(stepper)">
+                    <mat-icon>arrow_back</mat-icon>
+                    Back
+                </button>
+                <button mat-raised-button matStepperNext color="primary" (click)="nextStep()"
+                    [disabled]="!canProceedToNextStep()">
+                    Next: Enter Grades
+                    <mat-icon>arrow_forward</mat-icon>
+                </button>
+            </div>
+        </mat-step>
+
+        <!-- Step 3: Grade Entry -->
+        <mat-step label="Enter Grades">
+            <ng-container *ngIf="currentStep === 3 && this.selectedEnrollment?.id">
+                <app-result-entry [enrollmentId]="selectedEnrollment!.id" [courseId]="selectedCourse?.id" [students]="selection.selected" (goBack)="previousStep(stepper)"
+                    (onSubmit)="showSuccessMessage()"></app-result-entry>
+            </ng-container>
+        </mat-step>
+    </mat-stepper>
+</div>

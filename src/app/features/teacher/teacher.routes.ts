@@ -7,16 +7,22 @@ import { ResultEntryComponent } from './result-entry/result-entry.component';
 import { CourseDetailComponent } from './course-detail/course-detail.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { StudentListComponent } from './student-list/student-list.component';
+import { StudentAddComponent } from './student-add/student-add.component';
+import { StudentDetailComponent } from '../student/student-detail/student-detail.component';
+import { ResultDetailComponent } from './result-detail/result-detail.component';
 
 export const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent },
     { path: 'courses', component: FeatureListComponent },
     { path: 'students', component: StudentListComponent },
+    { path: 'students/add', component: StudentAddComponent },
+    { path: 'students/detail', component: StudentDetailComponent },
     { path: 'course-detail/:id', component: CourseDetailComponent },
+    { path: 'results', component: ResultDetailComponent },
     { path: 'create', component: CreateEnrollmentComponent },
     { path: 'enrollment-detail/:id', component: EnrollmentDetailComponent },
     { path: 'grade-dist', component: GradeDistributionComponent },
-    { path: 'result-entry/:id', component: ResultEntryComponent },
+    { path: 'results/entry/:id', component: ResultEntryComponent },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
 
