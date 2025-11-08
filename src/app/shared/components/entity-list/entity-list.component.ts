@@ -199,7 +199,6 @@ export class EntityListComponent implements OnInit, OnChanges {
     const startIndex = this.currentPage * this.pageSize;
     const endIndex = startIndex + this.pageSize;
     this.paginatedData = this.filteredData.slice(startIndex, endIndex);
-    console.log("Pppp", this.paginatedData);
     
 
   }
