@@ -16,6 +16,7 @@ import { Observable, take, map } from 'rxjs';
 import { ApiService } from '../../../services/api/api.service';
 import { EntityListData } from '../../../shared/models/shared.model';
 import { Router } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
 
 export interface Student {
   id: string;
@@ -43,7 +44,8 @@ export interface Student {
     MatTableModule,
     MatFormFieldModule,
     MatSelectModule,
-    MatCheckboxModule
+    MatCheckboxModule,
+    MatButtonModule,
   ],
   templateUrl: './student-list.component.html',
   styleUrl: './student-list.component.scss'

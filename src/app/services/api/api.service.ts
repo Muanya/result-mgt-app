@@ -107,6 +107,11 @@ export class ApiService {
   getResultsByStudent(studentId: number): Observable<any[]> {
     return this.getData(`api/results/student/${studentId}`);
   }
+
+  getResultsForAllStudent(): Observable<any[]> {
+    return this.getData(`api/results`);
+  }
+
   getCourseById(id: number): Observable<any> {
     return this.getData(`api/courses/key/${id}`);
   }

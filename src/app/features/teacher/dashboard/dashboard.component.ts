@@ -111,6 +111,10 @@ export class DashboardComponent {
     console.log('Quick action:', action);
     if (action === 'Add Student') {
       this.router.navigate(['/teacher/students/add']);
+    }else if (action === 'Create Course') {
+      this.router.navigate(['/teacher/courses/create']);
+    }else if (action === 'Enter Results') {
+      this.router.navigate(['/teacher/results/entry']);
     }
   }
 

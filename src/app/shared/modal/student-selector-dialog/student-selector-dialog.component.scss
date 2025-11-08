@@ -1,0 +1,193 @@
+.student-selector-dialog {
+  min-width: 700px;
+  
+  .mat-dialog-title {
+    margin: 0 0 16px 0;
+    color: var(--dark-color);
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  
+  .mat-dialog-content {
+    max-height: 70vh;
+    padding: 0 24px;
+  }
+  
+  .search-section {
+    display: flex;
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 20px;
+    
+    .search-field {
+      flex: 1;
+    }
+    
+    .selection-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      
+      .control-btn {
+        white-space: nowrap;
+        
+        .mat-icon {
+          margin-right: 4px;
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+  
+  .selection-mode {
+    margin-bottom: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    
+    .mode-radio {
+      display: block;
+      margin-bottom: 8px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  
+  .students-section {
+    h3 {
+      margin: 0 0 12px 0;
+      color: var(--dark-color);
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+  }
+  
+  .students-list-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: white;
+    
+    .students-list {
+      padding: 8px;
+    }
+  }
+  
+  .student-checkbox {
+    display: block;
+    padding: 12px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    transition: var(--transition);
+    border: 1px solid transparent;
+    
+    &:hover {
+      background: #f1f5f9;
+      border-color: var(--border-color);
+    }
+    
+    &.high-achiever {
+      border-left: 4px solid var(--success-color);
+      background: rgba(16, 185, 129, 0.05);
+    }
+    
+    &.low-achiever {
+      border-left: 4px solid var(--danger-color);
+      background: rgba(239, 68, 68, 0.05);
+    }
+    
+    &.mat-checkbox-checked {
+      background: rgba(99, 102, 241, 0.05);
+      border-color: var(--primary-color);
+    }
+    
+    .student-info {
+      display: flex;
+      flex-direction: column;
+      
+      .student-name {
+        font-weight: 600;
+        color: var(--dark-color);
+        font-size: 0.9rem;
+        margin-bottom: 2px;
+      }
+      
+      .student-details {
+        color: #64748b;
+        font-size: 0.8rem;
+      }
+    }
+  }
+  
+  .selection-summary {
+    text-align: center;
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 6px;
+    font-weight: 600;
+    margin-top: 12px;
+  }
+  
+  .quick-selection {
+    margin-top: 20px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    
+    h4 {
+      margin: 0 0 12px 0;
+      color: var(--dark-color);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    
+    .quick-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .quick-btn {
+        .mat-icon {
+          margin-right: 4px;
+          font-size: 18px;
+          width: 18px;
+          height: 18px;
+        }
+      }
+    }
+  }
+  
+  .mat-dialog-actions {
+    padding: 16px 0 0 0;
+    margin-bottom: 0;
+    
+    button {
+      margin-left: 8px;
+    }
+  }
+}
+
+// Scrollbar styling
+.students-list-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.students-list-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.students-list-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+  
+  &:hover {
+    background: #94a3b8;
+  }
+}

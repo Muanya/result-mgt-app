@@ -21,6 +21,7 @@ import { ApiService } from '../../../services/api/api.service';
 import { firstValueFrom, take } from 'rxjs';
 import { CourseDetail, EnrollmentDetail, UserDetail } from '../../../shared/models/shared.model';
 import { NO_ENROLL_INDEX, NO_ENROLLMENT_OPTION } from '../../../shared/models/shared.constant';
+import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
@@ -39,6 +40,7 @@ import { NO_ENROLL_INDEX, NO_ENROLLMENT_OPTION } from '../../../shared/models/sh
     MatCheckboxModule,
     MatPaginatorModule,
     MatChipsModule,
+    MatButtonModule,
     MatProgressSpinnerModule,
     ResultEntryComponent
   ],

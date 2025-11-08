@@ -15,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from "@angular/material/stepper";
 import { UserDetail } from '../../../shared/models/shared.model';
 import { NO_ENROLL_INDEX } from '../../../shared/models/shared.constant';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-result-entry',
@@ -29,7 +30,8 @@ import { NO_ENROLL_INDEX } from '../../../shared/models/shared.constant';
     MatTableModule,
     MatChipsModule,
     MatProgressSpinnerModule,
-    MatStepperModule
+    MatStepperModule,
+    MatButtonModule
   ],
   templateUrl: './result-entry.component.html',
   styleUrl: './result-entry.component.scss'

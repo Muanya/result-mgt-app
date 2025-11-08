@@ -10,6 +10,7 @@ import { StudentListComponent } from './student-list/student-list.component';
 import { StudentAddComponent } from './student-add/student-add.component';
 import { StudentDetailComponent } from '../student/student-detail/student-detail.component';
 import { ResultDetailComponent } from './result-detail/result-detail.component';
+import { ViewAllResultsComponent } from './view-all-results/view-all-results.component';
 
 export const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent },
@@ -18,11 +19,12 @@ export const routes: Routes = [
     { path: 'students/add', component: StudentAddComponent },
     { path: 'students/detail', component: StudentDetailComponent },
     { path: 'course-detail/:id', component: CourseDetailComponent },
-    { path: 'results', component: ResultDetailComponent },
+    { path: 'results', component: ViewAllResultsComponent },
+    { path: 'results/entry', component: ResultDetailComponent },
+
     { path: 'create', component: CreateEnrollmentComponent },
     { path: 'enrollment-detail/:id', component: EnrollmentDetailComponent },
     { path: 'grade-dist', component: GradeDistributionComponent },
-    { path: 'results/entry/:id', component: ResultEntryComponent },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];
 

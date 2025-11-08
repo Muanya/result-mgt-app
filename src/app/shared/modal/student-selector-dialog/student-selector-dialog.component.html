@@ -1,0 +1,103 @@
+ <div class="student-selector-dialog">
+      <h2 mat-dialog-title>Select Students to Display</h2>
+      
+      <mat-dialog-content>
+        <!-- Search Bar -->
+        <div class="search-section">
+          <mat-form-field class="search-field" appearance="outline">
+            <mat-label>Search students</mat-label>
+            <input matInput 
+                   [(ngModel)]="searchTerm" 
+                   (ngModelChange)="applySearch()"
+                   placeholder="Search by name, ID, class, or section">
+            <mat-icon matSuffix>search</mat-icon>
+          </mat-form-field>
+
+          <div class="selection-controls">
+            <button mat-stroked-button (click)="selectAll()" class="control-btn">
+              <mat-icon>check_box</mat-icon>
+              Select All
+            </button>
+            <button mat-stroked-button (click)="clearAll()" class="control-btn">
+              <mat-icon>check_box_outline_blank</mat-icon>
+              Clear All
+            </button>
+            <button mat-stroked-button (click)="toggleSelectAll()" class="control-btn">
+              <mat-icon>swap_horiz</mat-icon>
+              Toggle All
+            </button>
+          </div>
+        </div>
+
+        <!-- Selection Mode Toggle -->
+        <div class="selection-mode">
+          <mat-radio-group [(ngModel)]="isCustomSelection" (change)="onSelectionModeChange()">
+            <mat-radio-button [value]="false" class="mode-radio">
+              Show All Students ({{ allStudentsCount }})
+            </mat-radio-button>
+            <mat-radio-button [value]="true" class="mode-radio">
+              Custom Selection ({{ selectedCount }} selected)
+            </mat-radio-button>
+          </mat-radio-group>
+        </div>
+
+        <!-- Students List -->
+        <div class="students-section" *ngIf="isCustomSelection">
+          <h3>Available Students ({{ filteredStudents.length }})</h3>
+          
+          <div class="students-list-container">
+            <div class="students-list">
+              <mat-checkbox 
+                *ngFor="let student of filteredStudents"
+                [checked]="isStudentSelected(student.studentId)"
+                (change)="toggleStudent(student.studentId)"
+                class="student-checkbox"
+                [class.high-achiever]="student.average >= 90"
+                [class.low-achiever]="student.average < 60">
+                <div class="student-info">
+                  <span class="student-name">{{ student.studentName }}</span>
+                  <span class="student-details">
+                    {{ student.studentId }} •
+                    Avg: {{ student.average | number:'1.1-1' }}
+                  </span>
+                </div>
+              </mat-checkbox>
+            </div>
+          </div>
+
+          <div class="selection-summary">
+            {{ selectedCount }} of {{ filteredStudents.length }} students selected
+            <span *ngIf="searchTerm"> (filtered)</span>
+          </div>
+        </div>
+
+        <!-- Quick Selection Options -->
+        <div class="quick-selection" *ngIf="isCustomSelection">
+          <h4>Quick Selection</h4>
+          <div class="quick-buttons">
+            <button mat-stroked-button (click)="selectHighAchievers()" class="quick-btn">
+              <mat-icon>emoji_events</mat-icon>
+              Top Students (A+)
+            </button>
+            <button mat-stroked-button (click)="selectByGrade('A')" class="quick-btn">
+              A Students
+            </button>
+            <button mat-stroked-button (click)="selectByGrade('B')" class="quick-btn">
+              B Students
+            </button>
+            <button mat-stroked-button (click)="selectByGrade('C')" class="quick-btn">
+              C Students
+            </button>
+          
+          </div>
+        </div>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="useAllStudents()">Use All Students</button>
+        <button mat-raised-button color="primary" (click)="onSave()">
+          Save Selection ({{ selectedCount }} students)
+        </button>
+      </mat-dialog-actions>
+    </div>

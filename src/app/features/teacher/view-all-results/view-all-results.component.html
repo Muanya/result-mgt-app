@@ -1,0 +1,344 @@
+@if (!showLoading()) {
+<div class="results-container">
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="title-section">
+                <h1 class="title">Student Results Dashboard</h1>
+                <p class="subtitle">{{ getTotalStudents() }} students, {{ courses.length }} courses</p>
+            </div>
+
+            <div class="controls">
+                <!-- Material Search -->
+                <mat-form-field class="search-field">
+                    <mat-label>Search students</mat-label>
+                    <input matInput [value]="searchTerm" (keyup)="applySearch($event)"
+                        placeholder="Search by name, ID, or class" #searchInput>
+                    <button mat-icon-button matSuffix (click)="clearSearch()" *ngIf="activeFilters.searchTerm">
+                        <mat-icon>clear</mat-icon>
+                    </button>
+                    <mat-icon matSuffix *ngIf="!activeFilters.searchTerm">search</mat-icon>
+                </mat-form-field>
+
+                <button mat-stroked-button (click)="openStudentSelector()" class="student-selector-btn"
+                    [class.active]="isCustomStudentSelection" matTooltip="Select students to display">
+                    <mat-icon>people</mat-icon>
+                    {{ getStudentSelectionText() }}
+                </button>
+
+                <!-- Column Customization Button -->
+                <button mat-stroked-button (click)="openColumnSelector()" class="customize-columns-btn"
+                    matTooltip="Customize visible courses">
+                    <mat-icon>view_column</mat-icon>
+                    Columns ({{ getVisibleSubjectCount() }})
+                </button>
+
+                <button mat-raised-button color="primary" (click)="exportResults()" class="export-btn">
+                    <mat-icon>download</mat-icon>
+                    Export CSV
+                </button>
+
+                <button mat-raised-button color="primary" (click)="enterNewResult()" class="export-btn">
+                    <mat-icon>assignment</mat-icon>
+                    Enter Results
+                </button>
+
+                <!-- Clear Filters Button -->
+                <button mat-stroked-button color="warn" (click)="clearAllFilters()" *ngIf="isFilterActive()"
+                    class="clear-filters-btn">
+                    <mat-icon>clear_all</mat-icon>
+                    Clear Filters ({{ getActiveFilterCount() }})
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Filters -->
+    <div class="quick-filters">
+
+
+        <!-- Grade Range Filter -->
+        <div class="filter-group">
+            <label>Grade Range: {{ activeFilters.gradeRange.min }} - {{ activeFilters.gradeRange.max }}</label>
+            <div class="range-slider">
+                <mat-slider min="0" max="100" step="1" class="range-slider-min">
+                    <input matSliderThumb [value]="activeFilters.gradeRange.min"
+                        (valueChange)="onGradeRangeChange($event, activeFilters.gradeRange.max)">
+                </mat-slider>
+                <mat-slider min="0" max="100" step="1" class="range-slider-max">
+                    <input matSliderThumb [value]="activeFilters.gradeRange.max"
+                        (valueChange)="onGradeRangeChange(activeFilters.gradeRange.min, $event)">
+                </mat-slider>
+            </div>
+        </div>
+
+        <!-- Subject Filters -->
+        <div class="subject-filters">
+            <label>Filter by courses (Passing ≥50):</label>
+            <div class="subject-chips">
+                <mat-chip-listbox multiple>
+                    <mat-chip-option *ngFor="let subject of courses.slice(0, 8)"
+                        [selected]="isSubjectSelected(subject.id)"
+                        (selectionChange)="onSubjectFilterChange(subject.id, $event.selected)"
+                        class="core">
+                        {{ subject.code }}
+                    </mat-chip-option>
+                </mat-chip-listbox>
+                <span class="more-chip" *ngIf="courses.length > 8" title="More courses">
+                    +{{ courses.length - 8 }} more
+                </span>
+            </div>
+        </div>
+
+        <!-- Subject Column Quick Selector -->
+        <div class="subject-columns-selector">
+            <label>Visible Courses:</label>
+            <div class="subject-columns-chips">
+                <!-- Visible courses -->
+                <mat-chip-listbox>
+                    <mat-chip-option *ngFor="let subject of getDisplaySubjects()" [selected]="true"
+                        (removed)="toggleSubjectColumn(subject.id)" class="core">
+                        {{ subject.code }}
+                        <mat-icon matChipRemove>cancel</mat-icon>
+                    </mat-chip-option>
+                </mat-chip-listbox>
+
+                <!-- Show more toggle -->
+                <button mat-button color="primary" *ngIf="getHiddenSubjectCount() > 0 || showMoreSubjects"
+                    (click)="toggleShowMoreSubjects()" class="show-more-btn">
+                    <mat-icon>{{ showMoreSubjects ? 'expand_less' : 'expand_more' }}</mat-icon>
+                    {{ showMoreSubjects ? 'Show Less' : ('+' + getHiddenSubjectCount() + ' more') }}
+                </button>
+
+                <!-- Available courses (shown when expanded) -->
+                <div class="available-subjects" *ngIf="showMoreSubjects && getAvailableSubjects().length > 0">
+                    <mat-chip-listbox>
+                        <mat-chip-option *ngFor="let subject of getAvailableSubjects()"
+                            (click)="toggleSubjectColumn(subject.id)" class="core"
+                            >
+                            <mat-icon>add</mat-icon>
+                            {{ subject.code }}
+                        </mat-chip-option>
+                    </mat-chip-listbox>
+                </div>
+            </div>
+
+            <div class="column-info">
+                Average calculated from {{ getVisibleSubjectCount() }} visible courses
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <!-- Summary Statistics -->
+    <div class="summary-section">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">{{ getTotalStudents() }}</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ getClassAverage() }}</div>
+                <div class="stat-label">Class Average</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ getPassRate() }}%</div>
+                <div class="stat-label">Pass Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ getTopStudentsCount() }}</div>
+                <div class="stat-label">A+ Grades</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single Material Table -->
+    <div class="table-section" *ngIf="!isMobileView">
+        <div class="table-header-info" *ngIf="isFilterActive()">
+            <mat-icon>filter_list</mat-icon>
+            Showing {{ getTotalStudents() }} of {{ allStudents.length }} students
+            <span class="filter-indicator">({{ getActiveFilterCount() }} active filters)</span>
+        </div>
+
+        <div class="table-container">
+            <table mat-table [dataSource]="dataSource" matSort class="results-table">
+
+                <!-- Rank Column - STICKY -->
+                <ng-container matColumnDef="rank" sticky>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky-column rank-header">
+                        Rank
+                    </th>
+                    <td mat-cell *matCellDef="let student" class="sticky-column rank-cell">
+                        {{ student.rank }}
+                    </td>
+                </ng-container>
+
+                <!-- Student Column - STICKY -->
+                <ng-container matColumnDef="studentName" sticky>
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="sticky-column student-header">
+                        Student
+                    </th>
+                    <td mat-cell *matCellDef="let student" class="sticky-column student-cell">
+                        <div class="student-info">
+                            <div class="student-name">{{ student.studentName }}</div>
+                            <small class="student-id">{{ student.studentId }}</small>
+                        </div>
+                    </td>
+                </ng-container>
+
+
+                <!-- Subject Columns -->
+                <ng-container *ngFor="let subject of courses" [matColumnDef]="subject.id.toString()">
+                    <th mat-header-cell *matHeaderCellDef [class]="'subject-header'" [title]="subject.title"
+                        mat-sort-header>
+                        <div class="subject-header-content">
+                            <span class="subject-code">{{ subject.code }}</span>
+                            <small class="subject-credits">{{ subject.creditUnit }}cr</small>
+                        </div>
+                    </th>
+                    <td mat-cell *matCellDef="let student" [class]="'subject-cell'"
+                        (click)="openScoreDetails(student, subject.id, $event)">
+                        <span class="grade-badge clickable" [ngClass]="getGradeColor(student.courses, subject.id)">
+                            {{ getGradeValue(student.courses, subject.id) }}
+                        </span>
+                    </td>
+                </ng-container>
+
+                <!-- Average Column -->
+                <ng-container matColumnDef="average">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header class="avg-header">
+                        Avg
+                    </th>
+                    <td mat-cell *matCellDef="let student" class="avg-cell">
+                        <span class="average-score">{{ student.average | number:'1.1-1' }}</span>
+                    </td>
+                </ng-container>
+
+
+
+                <!-- Header Row -->
+                <tr mat-header-row *matHeaderRowDef="displayedColumns" class="table-header-row"></tr>
+
+                <!-- Data Row -->
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-data-row"></tr>
+
+                <!-- Empty State -->
+                <tr class="empty-row" *ngIf="dataSource.filteredData.length === 0">
+                    <td [attr.colspan]="displayedColumns.length" class="empty-state">
+                        <mat-icon class="empty-icon">search_off</mat-icon>
+                        <h3>No students found</h3>
+                        <p *ngIf="isFilterActive()">Try adjusting your filters or search criteria</p>
+                        <p *ngIf="!isFilterActive()">No student data available</p>
+                        <button mat-raised-button color="primary" (click)="clearAllFilters()" *ngIf="isFilterActive()">
+                            Clear All Filters
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Material Paginator -->
+        <mat-paginator [pageSize]="50" [pageSizeOptions]="[25, 50, 100, 200]" [length]="dataSource.filteredData.length"
+            showFirstLastButtons class="table-paginator">
+        </mat-paginator>
+    </div>
+
+    <!-- Mobile Cards -->
+    <div class="mobile-section" *ngIf="isMobileView">
+        <div class="mobile-header-info" *ngIf="isFilterActive()">
+            <mat-icon>filter_list</mat-icon>
+            {{ getTotalStudents() }} of {{ allStudents.length }} students
+        </div>
+
+        <div class="mobile-cards-container">
+            <mat-card *ngFor="let student of dataSource.filteredData" class="student-card">
+                <mat-card-header class="card-header">
+                    <mat-card-title class="card-title">{{ student.studentName }}</mat-card-title>
+                    <mat-card-subtitle class="card-subtitle">
+                        {{ student.studentId }} • {{ student.studentName }}
+                    </mat-card-subtitle>
+                    <div class="card-badges">
+                        <span class="rank-badge">Rank #{{ student.rank }}</span>
+                    </div>
+                </mat-card-header>
+
+                <mat-card-content class="card-content">
+                    <div class="scores-header">
+                        <span class="average-score">{{ student.average | number:'1.1-1' }}</span>
+                    </div>
+
+                    <div class="subjects-scroll">
+                        <div class="subjects-container">
+                            @for (subject of courses.slice(0, 8); track subject.id) {
+                            <div class="subject-grade-compact"
+                                (click)="openMobileScoreDetails(student, subject.id)">
+                                <span class="subject-code">{{ getSubjectName(subject.id) }}</span>
+                                <span class="grade-badge clickable"
+                                    [ngClass]="getGradeColor(student.courses, subject.id)">
+                                    {{ getGradeValue(student.courses, subject.id) }}
+                                </span>
+                            </div>
+                            }
+                            <div class="more-subjects" *ngIf="courses.length > 8">
+                                +{{ courses.length - 8 }} more
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+
+                <mat-card-actions class="card-actions">
+                    <div class="card-footer">
+                        <div class="total-subjects">
+                            <span>{{ courses.length }} courses</span>
+                        </div>
+                    </div>
+                </mat-card-actions>
+            </mat-card>
+
+            <!-- Mobile Empty State -->
+            <div class="empty-state-mobile" *ngIf="dataSource.filteredData.length === 0">
+                <mat-icon class="empty-icon">search_off</mat-icon>
+                <h3>No students found</h3>
+                <p *ngIf="isFilterActive()">Try adjusting your filters</p>
+                <button mat-raised-button color="primary" (click)="clearAllFilters()" *ngIf="isFilterActive()">
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Paginator -->
+        <mat-paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20]" [length]="dataSource.filteredData.length"
+            showFirstLastButtons class="mobile-paginator">
+        </mat-paginator>
+    </div>
+
+    <!-- Performance Analytics Section -->
+    <div class="performance-section">
+        <h3>Performance Analytics</h3>
+        <div class="charts-grid">
+            <div class="chart-placeholder">
+                <mat-icon class="chart-icon">bar_chart</mat-icon>
+                <h4>Grade Distribution</h4>
+                <p>Visual breakdown of student grades across all courses</p>
+            </div>
+            <div class="chart-placeholder">
+                <mat-icon class="chart-icon">trending_up</mat-icon>
+                <h4>Subject Performance</h4>
+                <p>Comparison of average scores by subject</p>
+            </div>
+            <div class="chart-placeholder">
+                <mat-icon class="chart-icon">pie_chart</mat-icon>
+                <h4>Grade Categories</h4>
+                <p>Distribution of A, B, C, D, F grades</p>
+            </div>
+        </div>
+    </div>
+</div>
+} @else {
+<div class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading student results...</p>
+</div>
+}

@@ -1,0 +1,35 @@
+<div class="column-selector-dialog">
+    <h2 mat-dialog-title>Customize Visible Subjects</h2>
+
+    <mat-dialog-content>
+        <div class="dialog-subtitle">
+            Select which subjects to display in the table. Average will be calculated based on visible courses.
+        </div>
+
+        <div class="columns-section">
+            <h3>Available Courses ({{ data.courses.length }})</h3>
+            <div class="columns-grid">
+                <mat-checkbox *ngFor="let subject of data.courses" [checked]="isSelected(subject.id)"
+                    (change)="toggleSubject(subject.id)" class="column-checkbox core" >
+                    <div class="subject-info">
+                        <span class="subject-name">{{ subject.title }}</span>
+                        <span class="subject-code">{{ subject.code }} • {{ subject.creditUnit }}cr</span>
+                    </div>
+                </mat-checkbox>
+            </div>
+        </div>
+
+        <div class="selected-count">
+            {{ selectedCount }} of {{ data.courses.length }} subjects selected
+        </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions align="end">
+        <button mat-button (click)="onCancel()">Cancel</button>
+        <button mat-button (click)="selectAll()">Select All</button>
+        <button mat-button (click)="clearAll()">Clear All</button>
+        <button mat-raised-button color="primary" (click)="onSave()" [disabled]="selectedCount === 0">
+            Save ({{ selectedCount }} courses)
+        </button>
+    </mat-dialog-actions>
+</div>

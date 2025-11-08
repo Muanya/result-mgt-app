@@ -60,8 +60,9 @@ export interface CourseDetail {
   id: number;
   code: string;
   title: string;
-  creditUnit: string;
+  creditUnit: number;
 }
+
 
 export interface EnrollmentDetail {
   id: number;
@@ -84,3 +85,51 @@ export interface EntityListData {
   subtitle: string;
   type: string;
 }
+
+export interface RawResultDetail {
+  id: number;
+  score: number;
+  grade: string;
+  studentId: number;
+  enrollmentId: number;
+  courseId: number;
+  studentName?: string;
+  courseTitle?: string;
+}
+
+
+export interface StudentGrade {
+  studentId: string;
+  studentName: string;
+  courses: {
+    [subjectId: string]: {
+      score: number;
+      grade: string;
+    };
+  };
+  average: number;
+  rank?: number;
+}
+
+export interface GradeSummary {
+  subjectId: number;
+  subjectName: string;
+  average: number;
+  highest: number;
+  lowest: number;
+  passRate: number;
+  totalStudents: number;
+}
+
+export interface FilterOptions {
+  subject: number[];
+  gradeRange: {
+    min: number;
+    max: number;
+  };
+}
+
+// export interface SortOptions {
+//   field: string;
+//   direction: 'asc' | 'desc';
+// }

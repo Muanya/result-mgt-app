@@ -10,6 +10,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatButtonModule } from '@angular/material/button';
 
 
 export const MY_DATE_FORMATS = {
@@ -43,7 +44,8 @@ interface Course {
     MatSelectModule,
     MatStepperModule,
     MatDatepickerModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    MatButtonModule
   ],
   templateUrl: './student-add.component.html',
   styleUrl: './student-add.component.scss'

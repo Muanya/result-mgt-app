@@ -1,0 +1,92 @@
+ <div class="score-details-dialog">
+      <div mat-dialog-title class="dialog-header">
+        <h2>Score Details</h2>
+        <button mat-icon-button (click)="onClose()" class="close-btn">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+
+      <mat-dialog-content>
+        <!-- Student Info -->
+        <div class="student-info-section">
+          <div class="student-avatar">
+            <mat-icon class="avatar-icon">person</mat-icon>
+          </div>
+          <div class="student-details">
+            <h3>{{ data.student.studentName }}</h3>
+            <p>{{ data.student.studentId }}</p>
+            <p class="rank">Rank: #{{ data.student.rank }}</p>
+          </div>
+        </div>
+
+        <!-- Subject & Score -->
+        <div class="score-section">
+          <div class="subject-card" [class]="getSubjectTypeClass()">
+            <div class="subject-header">
+              <h4>{{ data.subject.title }}</h4>
+              <span class="subject-code">{{ data.subject.code }}</span>
+            </div>
+            <div class="score-display">
+              <div class="score-circle" [class]="getScoreColorClass()">
+                <span class="score-value">{{ data.grade.score }}</span>
+                <span class="score-label">/100</span>
+              </div>
+              <div class="grade-badge" [class]="getScoreColorClass()">
+                {{ calculateGrade(data.grade.score) }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Performance Analysis -->
+        <div class="performance-section">
+          <h4>Performance Analysis</h4>
+          <div class="performance-grid">
+            <div class="performance-item">
+              <span class="label">Grade:</span>
+              <span class="value" [class]="getScoreColorClass()">{{ calculateGrade(data.grade.score) }}</span>
+            </div>
+            <div class="performance-item">
+              <span class="label">Status:</span>
+              <span class="value" [class]="data.grade">
+                {{ data.grade.score >= 50 ? 'Passing' : 'Needs Improvement' }}
+              </span>
+            </div>
+            <div class="performance-item">
+              <span class="label">Subject Type:</span>
+              <span class="value">Core</span>
+            </div>
+            <div class="performance-item">
+              <span class="label">Credits:</span>
+              <span class="value">{{ data.subject.creditUnit }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comparison Stats -->
+        <div class="comparison-section">
+          <h4>Class Comparison</h4>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-value">{{ data.grade.score }}</div>
+              <div class="stat-label">Student Score</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">85</div>
+              <div class="stat-label">Class Average</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">+{{ data.grade.score - 85 }}</div>
+              <div class="stat-label">Difference</div>
+            </div>
+          </div>
+        </div>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end">
+        <button mat-button (click)="onClose()">Close</button>
+        <button mat-raised-button color="primary" (click)="viewFullReport()">
+          View Full Report
+        </button>
+      </mat-dialog-actions>
+    </div>

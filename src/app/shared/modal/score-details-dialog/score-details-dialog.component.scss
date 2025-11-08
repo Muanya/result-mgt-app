@@ -1,0 +1,274 @@
+.score-details-dialog {
+  min-width: 500px;
+  max-width: 600px;
+
+  .dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 24px 8px;
+    
+    h2 {
+      margin: 0;
+      color: var(--dark-color);
+    }
+    
+    .close-btn {
+      color: #64748b;
+    }
+  }
+
+  .student-info-section {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    margin-bottom: 20px;
+
+    .student-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: var(--primary-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .avatar-icon {
+        color: white;
+        font-size: 30px;
+        width: 30px;
+        height: 30px;
+      }
+    }
+
+    .student-details {
+      h3 {
+        margin: 0 0 4px 0;
+        color: var(--dark-color);
+        font-size: 1.2rem;
+      }
+
+      p {
+        margin: 0 0 4px 0;
+        color: #64748b;
+        font-size: 0.9rem;
+      }
+
+      .rank {
+        font-weight: 600;
+        color: var(--primary-color);
+      }
+    }
+  }
+
+  .score-section {
+    margin-bottom: 20px;
+
+    .subject-card {
+      padding: 20px;
+      border-radius: 12px;
+      border-left: 4px solid;
+      
+      &.subject-core {
+        background: rgba(16, 185, 129, 0.05);
+        border-color: var(--success-color);
+      }
+      
+      &.subject-elective {
+        background: rgba(6, 182, 212, 0.05);
+        border-color: var(--secondary-color);
+      }
+      
+      &.subject-lab {
+        background: rgba(245, 158, 11, 0.05);
+        border-color: var(--warning-color);
+      }
+
+      .subject-header {
+        margin-bottom: 16px;
+        
+        h4 {
+          margin: 0 0 4px 0;
+          color: var(--dark-color);
+          font-size: 1.1rem;
+        }
+        
+        .subject-code {
+          color: #64748b;
+          font-size: 0.9rem;
+        }
+      }
+
+      .score-display {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        .score-circle {
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          
+          &.grade-excellent {
+            background: rgba(16, 185, 129, 0.1);
+            border: 3px solid var(--success-color);
+            color: var(--success-color);
+          }
+          
+          &.grade-good {
+            background: rgba(59, 130, 246, 0.1);
+            border: 3px solid var(--primary-color);
+            color: var(--primary-color);
+          }
+          
+          &.grade-average {
+            background: rgba(245, 158, 11, 0.1);
+            border: 3px solid var(--warning-color);
+            color: var(--warning-color);
+          }
+          
+          &.grade-poor {
+            background: rgba(239, 68, 68, 0.1);
+            border: 3px solid var(--danger-color);
+            color: var(--danger-color);
+          }
+          
+          &.grade-fail {
+            background: rgba(107, 114, 128, 0.1);
+            border: 3px solid #6b7280;
+            color: #6b7280;
+          }
+
+          .score-value {
+            font-size: 2rem;
+            line-height: 1;
+          }
+
+          .score-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+          }
+        }
+
+        .grade-badge {
+          padding: 12px 20px;
+          border-radius: 25px;
+          font-weight: 800;
+          font-size: 1.2rem;
+        }
+      }
+    }
+  }
+
+  .performance-section {
+    margin-bottom: 20px;
+
+    h4 {
+      margin: 0 0 12px 0;
+      color: var(--dark-color);
+    }
+
+    .performance-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+
+      .performance-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px;
+        background: #f8fafc;
+        border-radius: 6px;
+
+        .label {
+          color: #64748b;
+          font-weight: 500;
+        }
+
+        .value {
+          font-weight: 600;
+          
+          &.pass {
+            color: var(--success-color);
+          }
+          
+          &.fail {
+            color: var(--danger-color);
+          }
+        }
+      }
+    }
+  }
+
+  .comparison-section {
+    h4 {
+      margin: 0 0 16px 0;
+      color: var(--dark-color);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+
+      .stat-card {
+        text-align: center;
+        padding: 16px;
+        background: #f8fafc;
+        border-radius: 8px;
+
+        .stat-value {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: var(--primary-color);
+          margin-bottom: 4px;
+        }
+
+        .stat-label {
+          font-size: 0.8rem;
+          color: #64748b;
+        }
+      }
+    }
+  }
+
+  .mat-dialog-actions {
+    padding: 16px 0 0 0;
+    margin-bottom: 0;
+  }
+}
+
+// Mobile styles
+@media (max-width: 768px) {
+  .score-details-dialog {
+    min-width: unset;
+    max-width: 95vw;
+    
+    .student-info-section {
+      flex-direction: column;
+      text-align: center;
+    }
+    
+    .score-display {
+      flex-direction: column;
+      gap: 16px;
+    }
+    
+    .performance-grid {
+      grid-template-columns: 1fr !important;
+    }
+    
+    .stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+}

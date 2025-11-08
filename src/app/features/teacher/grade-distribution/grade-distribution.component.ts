@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ChartConfiguration } from 'chart.js';
 import { BaseChartDirective } from 'ng2-charts';
 
-import { AnalyticsService } from '../../../services/analytics/analytics.service';
+import { UtilService } from '../../../services/util/util.service';
 
 
 @Component({
@@ -27,13 +27,13 @@ export class GradeDistributionComponent implements OnInit {
   };
 
   public chartData: ChartConfiguration<'bar'>['data'] = { labels: [], datasets: [] };
-  constructor(private analytics: AnalyticsService) { }
+  constructor(private analytics: UtilService) { }
 
   ngOnInit() {
-    this.analytics.gradeDistribution({ classId: 1, termId: 1 }).subscribe(data => {
-      this.chartData.labels = data.labels; // ['A','B','C','D','F']
-      this.chartData.datasets = [{ data: data.counts, label: 'Count' }];
-    });
+    // this.analytics.gradeDistribution({ classId: 1, termId: 1 }).subscribe(data => {
+    //   this.chartData.labels = data.labels; // ['A','B','C','D','F']
+    //   this.chartData.datasets = [{ data: data.counts, label: 'Count' }];
+    // });
   }
 
 

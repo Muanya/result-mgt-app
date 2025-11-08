@@ -1,0 +1,106 @@
+.column-selector-dialog {
+    min-width: 500px;
+
+    .mat-dialog-title {
+        margin: 0 0 16px 0;
+        color: var(--dark-color);
+        font-size: 1.5rem;
+        font-weight: 700;
+    }
+
+    .dialog-subtitle {
+        color: #64748b;
+        margin-bottom: 24px;
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .columns-section {
+        margin-bottom: 20px;
+
+        h3 {
+            margin: 0 0 12px 0;
+            color: var(--dark-color);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+    }
+
+    .columns-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 8px;
+        max-height: 400px;
+        overflow-y: auto;
+        padding: 8px;
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .column-checkbox {
+        padding: 12px;
+        border-radius: 6px;
+        background: white;
+        border: 1px solid var(--border-color);
+        transition: var(--transition);
+
+        &:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-1px);
+        }
+
+        &.core {
+            border-left: 4px solid var(--success-color);
+        }
+
+        &.elective {
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        &.lab {
+            border-left: 4px solid var(--warning-color);
+        }
+
+        &.mat-checkbox-checked {
+            background: rgba(99, 102, 241, 0.05);
+            border-color: var(--primary-color);
+        }
+
+        .subject-info {
+            display: flex;
+            flex-direction: column;
+
+            .subject-name {
+                font-weight: 600;
+                color: var(--dark-color);
+                font-size: 0.9rem;
+                margin-bottom: 2px;
+            }
+
+            .subject-code {
+                color: #64748b;
+                font-size: 0.8rem;
+            }
+        }
+    }
+
+    .selected-count {
+        text-align: center;
+        padding: 12px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 6px;
+        font-weight: 600;
+        margin-bottom: 16px;
+    }
+
+    .mat-dialog-actions {
+        padding: 16px 0 0 0;
+        margin-bottom: 0;
+
+        button {
+            margin-left: 8px;
+        }
+    }
+}
