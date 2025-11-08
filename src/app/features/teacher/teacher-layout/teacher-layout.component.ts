@@ -47,7 +47,7 @@ export class TeacherLayoutComponent {
     { path: 'students', label: 'Students', icon: 'people', },
     { path: 'courses', label: 'Courses', icon: 'book', },
     { path: 'results', label: 'Results', icon: 'bar_chart', },
-    { path: 'attendance', label: 'Attendance', icon: 'event_available' },
+    { path: 'magisters', label: 'Magisters', icon: 'menu_book' },
     { path: 'schedule', label: 'Schedule', icon: 'calendar_today' },
     { path: 'messages', label: 'Messages', icon: 'message', badge: 5 }
   ];

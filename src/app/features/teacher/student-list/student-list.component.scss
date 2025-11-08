@@ -231,26 +231,6 @@
   justify-content: center;
   font-weight: 600;
   font-size: 14px;
-
-  &.grade-A, &.grade-A- {
-    background: #e8f5e8;
-    color: #2e7d32;
-  }
-
-  &.grade-B, &.grade-B+, &.grade-B- {
-    background: #fff3e0;
-    color: #ef6c00;
-  }
-
-  &.grade-C, &.grade-C+ {
-    background: #ffebee;
-    color: #c62828;
-  }
-
-  &.grade-D, &.grade-F {
-    background: #f5f5f5;
-    color: #757575;
-  }
 }
 
 .action-buttons {

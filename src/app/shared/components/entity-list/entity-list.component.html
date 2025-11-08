@@ -1,33 +1,249 @@
 <div class="entity-list-container">
-    <!-- Header -->
-    <div class="header">
-        <h2>{{ title }}</h2>
-        <button mat-icon-button (click)="toggleView()">
-            <mat-icon>{{ isGridView ? 'list' : 'grid_view' }}</mat-icon>
-        </button>
-    </div>
+    <!-- Header Section -->
+    <mat-toolbar color="primary" class="header-toolbar">
+        <mat-toolbar-row>
+            <h2 class="title">{{ title }}</h2>
 
-    <!-- List/Grid View -->
-    <div [ngClass]="{ 'grid-view': isGridView, 'list-view': !isGridView }" class="entity-content">
-        <mat-card *ngFor="let item of data" class="entity-card">
-            <mat-card-header>
-                <mat-card-title>{{ item.title }}</mat-card-title>
-            </mat-card-header>
-            <mat-card-content>
-                <p>{{ item.subtitle }}</p>
-                @if(item.type){
-                <p>Type: {{ item.type }}</p>
+            <span class="spacer"></span>
+
+
+
+            <!-- Export Button -->
+            <button mat-icon-button [matMenuTriggerFor]="exportMenu" [disabled]="data.length === 0"
+                matTooltip="Export data" aria-label="Export options">
+                <mat-icon>download</mat-icon>
+            </button>
+
+            <!-- View Toggle -->
+            <mat-button-toggle-group [(value)]="isGridView" aria-label="View type">
+                <mat-button-toggle [value]="true" aria-label="Grid view">
+                    <mat-icon>grid_view</mat-icon>
+                </mat-button-toggle>
+                <mat-button-toggle [value]="false" aria-label="List view">
+                    <mat-icon>list</mat-icon>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+
+            <!-- Create New  -->
+            <button mat-raised-button color="accent" (click)="onCreateNew()" class="create-button">
+                <mat-icon>add</mat-icon>
+                Create New
+            </button>
+        </mat-toolbar-row>
+
+
+
+        <!-- Search and Filter Row -->
+        <mat-toolbar-row class="filter-row">
+            <!-- Search -->
+            <mat-form-field appearance="outline" class="search-field">
+                <mat-label>Search</mat-label>
+                <input matInput [(ngModel)]="searchTerm" (ngModelChange)="onSearchChange()" placeholder="Search...">
+                <button mat-icon-button matSuffix (click)="clearSearch()" *ngIf="searchTerm">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <mat-icon matPrefix>search</mat-icon>
+            </mat-form-field>
+
+            <!-- Filter Toggle -->
+            <button mat-stroked-button (click)="toggleFilterPanel()" class="filter-toggle">
+                <mat-icon>filter_list</mat-icon>
+                Filters
+                @if (activeFilterCount > 0) {
+                <span class="filter-badge">{{ activeFilterCount }}</span>
                 }
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-button color="primary">View</button>
-                <button mat-button color="accent">Edit</button>
-            </mat-card-actions>
-        </mat-card>
+            </button>
+
+
+        </mat-toolbar-row>
+    </mat-toolbar>
+
+    <!-- Filter Panel -->
+    @if (showFilterPanel) {
+    <mat-expansion-panel class="filter-panel" [expanded]="true">
+        <mat-expansion-panel-header>
+            <mat-panel-title>Filters</mat-panel-title>
+            <mat-panel-description>
+                {{ activeFilterCount }} active filters
+            </mat-panel-description>
+        </mat-expansion-panel-header>
+
+        <div class="filter-content">
+            <!-- Type Filter -->
+            @if (availableTypes.length > 0) {
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Type</mat-label>
+                <mat-select [(value)]="selectedType" (selectionChange)="applyFilters()" multiple>
+                    @for (type of availableTypes; track type) {
+                    <mat-option [value]="type">{{ type }}</mat-option>
+                    }
+                </mat-select>
+            </mat-form-field>
+            }
+
+            <!-- Date Range Filter -->
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Date Range</mat-label>
+                <mat-date-range-input [rangePicker]="picker">
+                    <input matStartDate [(ngModel)]="dateRange.start" placeholder="Start date">
+                    <input matEndDate [(ngModel)]="dateRange.end" placeholder="End date">
+                </mat-date-range-input>
+                <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+            </mat-form-field>
+
+            <!-- Status Filter -->
+            <mat-form-field appearance="outline" class="filter-field">
+                <mat-label>Status</mat-label>
+                <mat-select [(value)]="selectedStatus" (selectionChange)="applyFilters()">
+                    <mat-option value="">All Status</mat-option>
+                    <mat-option value="active">Active</mat-option>
+                    <mat-option value="inactive">Inactive</mat-option>
+                    <mat-option value="pending">Pending</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <!-- Filter Actions -->
+            <div class="filter-actions">
+                <button mat-button (click)="clearAllFilters()">
+                    <mat-icon>clear_all</mat-icon>
+                    Clear All
+                </button>
+                <button mat-raised-button color="primary" (click)="applyFilters()">
+                    <mat-icon>check</mat-icon>
+                    Apply Filters
+                </button>
+            </div>
+        </div>
+    </mat-expansion-panel>
+    }
+
+    <!-- Content Area -->
+    <div class="content-wrapper">
+        <!-- Loading State -->
+        @if (isLoading) {
+        <app-loader type="skeleton" message="Loading Data" [showProgress]="false" [fullScreen]="true">
+        </app-loader>
+        }
+
+
+        <!-- Empty State -->
+        @if (!isLoading && paginatedData.length === 0) {
+        <div class="empty-state">
+            @if (searchTerm || activeFilterCount > 0) {
+            <mat-icon class="empty-icon">search_off</mat-icon>
+            <h3 class="mat-h3">No matching results</h3>
+            <p class="mat-body-1">Try adjusting your search or filters to find what you're looking for.</p>
+            <button mat-raised-button color="primary" (click)="clearAllFilters()">
+                Clear All Filters
+            </button>
+            } @else {
+            <mat-icon class="empty-icon">inbox</mat-icon>
+            <h3 class="mat-h3">No items found</h3>
+            <p class="mat-body-1">There are no items to display at the moment.</p>
+            }
+        </div>
+        }
+
+        <!-- List/Grid View -->
+        <div [ngClass]="isGridView ? 'grid-view' : 'list-view'" class="entity-content">
+            @for (item of paginatedData; track item.id) {
+            <mat-card class="entity-card" [class.list-card]="!isGridView" appearance="outlined">
+
+                <mat-card-header>
+                    @if (item.avatar) {
+                    <img mat-card-avatar [src]="item.avatar" [alt]="item.title">
+                    } @else {
+                    <div mat-card-avatar class="default-avatar">
+                        @if(item.icon){
+                        <mat-icon>{{item.icon}}</mat-icon>
+
+                        }@else {
+                        <mat-icon>description</mat-icon>
+                        }
+                    </div>
+                    }
+
+                    <mat-card-title class="mat-body-strong">{{ item.title }}</mat-card-title>
+                    <mat-card-subtitle>{{ item.subtitle }}</mat-card-subtitle>
+
+                    @if (item.type) {
+                    <div class="type-chip">
+                        <mat-chip>{{ item.type }}</mat-chip>
+                    </div>
+                    }
+                </mat-card-header>
+
+                <mat-card-content>
+                    @if (item.description) {
+                    <p class="description mat-body-2">{{ item.description }}</p>
+                    }
+
+                    @if (item.metadata) {
+                    <div class="metadata">
+                        @for (meta of item.metadata; track meta.label) {
+                        <div class="meta-item">
+                            <span class="meta-label mat-caption">{{ meta.label }}:</span>
+                            <span class="meta-value mat-body-2">{{ meta.value }}</span>
+                        </div>
+                        }
+                    </div>
+                    }
+                </mat-card-content>
+
+                <mat-card-actions align="end">
+                    <button mat-button color="primary" (click)="onView(item)">
+                        <mat-icon>visibility</mat-icon>
+                        View
+                    </button>
+                    <button mat-button color="accent" (click)="onEdit(item)">
+                        <mat-icon>edit</mat-icon>
+                        Edit
+                    </button>
+                    @if (item.actions) {
+                    <button mat-icon-button [matMenuTriggerFor]="menu" aria-label="More actions">
+                        <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        @for (action of item.actions; track action.label) {
+                        <button mat-menu-item (click)="onAction(action, item)">
+                            <mat-icon>{{ action.icon }}</mat-icon>
+                            <span>{{ action.label }}</span>
+                        </button>
+                        }
+                    </mat-menu>
+                    }
+                </mat-card-actions>
+            </mat-card>
+            }
+        </div>
     </div>
 
     <!-- Pagination -->
-    <mat-paginator [length]="data.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20]"
-        (page)="onPageChange($event)">
+    @if (filteredData.length > 0 && !isLoading) {
+    <mat-paginator [length]="filteredData.length" [pageSize]="pageSize" [pageSizeOptions]="[5, 10, 20, 50]"
+        [pageIndex]="currentPage" (page)="onPageChange($event)" showFirstLastButtons aria-label="Select page">
     </mat-paginator>
+    }
 </div>
+
+<!-- Export Menu -->
+<mat-menu #exportMenu="matMenu">
+    <button mat-menu-item (click)="exportData('csv')">
+        <mat-icon>text_snippet</mat-icon>
+        <span>Export as CSV</span>
+    </button>
+    <button mat-menu-item (click)="exportData('excel')">
+        <mat-icon>table_chart</mat-icon>
+        <span>Export as Excel</span>
+    </button>
+    <button mat-menu-item (click)="exportData('json')">
+        <mat-icon>code</mat-icon>
+        <span>Export as JSON</span>
+    </button>
+    <button mat-menu-item (click)="exportData('pdf')">
+        <mat-icon>picture_as_pdf</mat-icon>
+        <span>Export as PDF</span>
+    </button>
+</mat-menu>

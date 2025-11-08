@@ -80,10 +80,41 @@ export interface SingleResultModal {
   lastName: string;
 }
 
+
 export interface EntityListData {
+  id: string ;
   title: string;
   subtitle: string;
-  type: string;
+  type?: string;
+  avatar?: string;
+  icon?: string;
+  description?: string;
+  metadata?: { label: string; value: string }[];
+  actions?: EntityAction[];
+  // Additional properties for filtering
+  status?: string;
+  date?: string; // ISO date string
+}
+
+export interface EntityAction {
+  label: string;
+  icon: string;
+  handler?: (item: EntityListData) => void;
+}
+
+export type ExportFormat = 'csv' | 'excel' | 'json' | 'pdf';
+
+export interface EntityFilterState {
+  searchTerm: string;
+  selectedTypes: string[];
+  selectedStatus: string;
+  dateRange: { start: Date | null; end: Date | null };
+}
+
+export interface EntityAction {
+  label: string;
+  icon: string;
+  handler?: (item: EntityListData) => void;
 }
 
 export interface RawResultDetail {

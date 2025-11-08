@@ -15,7 +15,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { Observable, take, map, switchMap } from 'rxjs';
 import { ApiService } from '../../../services/api/api.service';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { NavbarComponent } from "../../../shared/components/navbar/navbar.component";
 import { NavItem } from '../../../shared/models/shared.model';
 
 
@@ -90,7 +89,6 @@ export interface StudentAcademicInfo {
     MatTabsModule,
     MatProgressBarModule,
     MatProgressSpinnerModule,
-    NavbarComponent
 ]
 })
 export class StudentDetailComponent implements OnInit {

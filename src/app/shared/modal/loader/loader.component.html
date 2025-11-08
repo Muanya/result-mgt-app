@@ -1,0 +1,60 @@
+<div class="loader-container" [class.full-screen]="fullScreen" [class.overlay]="overlay && !fullScreen"
+    [class.small]="size === 'small'" [class.large]="size === 'large'">
+
+    <div class="loader-content">
+        <!-- Spinner Loader -->
+        @if (type === 'spinner') {
+        <div class="spinner-loader">
+            <mat-progress-spinner [diameter]="spinnerDiameter" [strokeWidth]="strokeWidth" [color]="materialColor"
+                [mode]="showProgress ? 'determinate' : 'indeterminate'" [value]="progress$ | async">
+            </mat-progress-spinner>
+        </div>
+        }
+
+        <!-- Progress Bar Loader -->
+        @if (type === 'bar') {
+        <div class="progress-bar-loader">
+            <mat-progress-bar [color]="materialColor" [mode]="showProgress ? 'determinate' : 'indeterminate'"
+                [value]="progress$ | async">
+            </mat-progress-bar>
+            @if (showProgress) {
+            <div class="progress-info">
+                <span>Progress</span>
+                <span>{{ (progress$ | async) | number:'1.0-0' }}%</span>
+            </div>
+            }
+        </div>
+        }
+
+        <!-- Dots Loader -->
+        @if (type === 'dots') {
+        <div class="dots-loader">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        }
+
+        <!-- Skeleton Loader -->
+        @if (type === 'skeleton') {
+        <div class="skeleton-loader">
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+            <div class="skeleton-line"></div>
+        </div>
+        }
+
+        <!-- Message -->
+        @if (message) {
+        <p class="loader-message">
+            {{ message }}
+            @if (showProgress && ((progress$ | async) ?? 0) > 0) {
+            <span class="progress-percentage">
+                ({{ ((progress$ | async) ?? 0) | number:'1.0-0' }}%)
+            </span>
+            }
+        </p>
+        }
+
+    </div>
+</div>

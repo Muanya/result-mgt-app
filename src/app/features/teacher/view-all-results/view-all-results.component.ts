@@ -22,6 +22,8 @@ import { Router } from '@angular/router';
 import { ScoreDetailsDialogComponent, ScoreDetailsData } from '../../../shared/modal/score-details-dialog/score-details-dialog.component';
 import { SUMMA_CUM_LAUDE } from '../../../shared/models/shared.constant';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { LoaderComponent } from '../../../shared/modal/loader/loader.component';
+import { LoaderType } from '../../../shared/models/shared.enum';
 
 
 
@@ -43,7 +45,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatChipsModule,
     MatSliderModule,
     MatButtonModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    LoaderComponent
   ],
   templateUrl: './view-all-results.component.html',
   styleUrl: './view-all-results.component.scss'
@@ -89,6 +92,14 @@ export class ViewAllResultsComponent implements OnInit, AfterViewInit {
 
   showMoreSubjects = false;
   showLoading = signal(true);
+
+  // loader config
+  loaderType: LoaderType = 'bar';
+  loaderMessage = 'Loading Results...';
+  showProgress = true;
+  fullScreen = false;
+  overlay = false;
+
 
   constructor(private dialog: MatDialog,
     private resultService: ResultService,

@@ -10,6 +10,8 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { map, Observable, of, take } from 'rxjs';
 import { EntityListComponent } from '../entity-list/entity-list.component';
 import { ApiService } from '../../../services/api/api.service';
+import { MatButtonModule } from '@angular/material/button';
+import { LoaderComponent } from '../../modal/loader/loader.component';
 
 @Component({
   selector: 'app-feature-list',
@@ -22,7 +24,10 @@ import { ApiService } from '../../../services/api/api.service';
     MatFormFieldModule,
     MatPaginatorModule,
     MatInputModule,
-    RouterModule, EntityListComponent],
+    MatButtonModule,
+    RouterModule,
+    EntityListComponent,
+    LoaderComponent],
 })
 export class FeatureListComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -50,7 +55,8 @@ export class FeatureListComponent {
   }
 
   ngOnInit() {
-    this.loadTitle(this.route.snapshot.paramMap.get('title'));
+
+    this.loadTitle(this.route.snapshot.data['title']);
 
     if (this.isBrowser) {
       this.entityData$ = this.load();
@@ -67,36 +73,27 @@ export class FeatureListComponent {
     }
     this.title = arg0.charAt(0).toUpperCase() + arg0.slice(1) + 's';
 
-    console.log("title ", this.title);
-
   }
 
-   load(page = 0, size = 20, search = ''): Observable<EntityListData[]> {
+  load(page = 0, size = 20, search = ''): Observable<EntityListData[]> {
     if (this.title.toLowerCase() == 'magisters') {
       return this.apiService.getAllMagisters().pipe(
         take(1),
-        map(res => res.map((magister: { firstName: any; lastName: any; email: any; }) =>
-          ({ title: `${magister.firstName} ${magister.lastName}`, subtitle: magister.email, type: 'Student' })
-        ))
-      );
-    } else if (this.title.toLowerCase() == 'courses') {
-      return this.apiService.getAllCourses().pipe(
-        take(1),
-        map(res => res.map((data: { title: any; code: any; creditUnit: any; }) =>
-          ({ title: `${data.title}`, subtitle: data.code, type: 'Course' })
+        map(res => res.map((magister: { id: any, firstName: any; lastName: any; email: any; }) =>
+          ({ id: `${magister.id}`, title: `${magister.firstName} ${magister.lastName}`, subtitle: magister.email, type: 'Magister', icon: 'person' } as EntityListData)
         ))
       );
     } else {
-      return this.apiService.getAllStudents().pipe(
+      return this.apiService.getAllCourses().pipe(
         take(1),
-        map(res => res.map((data: { firstName: any; lastName: any; email: any; }) =>
-          ({ title: `${data.firstName} ${data.lastName}`, subtitle: data.email, type: 'Student' })
-        ))
+        map(res => res.map((data: { id: any, title: any; code: any; creditUnit: any; }) =>
+          ({ id: `${data.id}`, title: `${data.title}`, subtitle: data.code, type: 'Course' } as EntityListData)
+        )),
       );
     }
   }
 
- applyFilter(filterValue: string) {
+  applyFilter(filterValue: string) {
     if (this.isBrowser) {
       this.entityData$ = this.load(0, 20, filterValue.trim().toLowerCase());
     }

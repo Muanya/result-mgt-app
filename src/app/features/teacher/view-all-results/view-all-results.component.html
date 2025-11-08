@@ -4,7 +4,7 @@
     <div class="header">
         <div class="header-content">
             <div class="title-section">
-                <h1 class="title">Student Results Dashboard</h1>
+                <div class="title">Student Results Dashboard</div>
                 <p class="subtitle">{{ getTotalStudents() }} students, {{ courses.length }} courses</p>
             </div>
 
@@ -337,8 +337,9 @@
     </div>
 </div>
 } @else {
-<div class="loading-container">
-    <mat-spinner diameter="50"></mat-spinner>
-    <p>Loading student results...</p>
-</div>
-}
+ <app-loader
+      [type]="loaderType"
+      [message]="loaderMessage"
+      [showProgress]="showProgress"
+      [fullScreen]="true">
+    </app-loader>}
