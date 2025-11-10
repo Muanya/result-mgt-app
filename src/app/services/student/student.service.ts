@@ -1,7 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Student } from '../../shared/models/shared.model';
-import { ApiService } from '../api/api.service';
 
 @Injectable({
   providedIn: 'root'

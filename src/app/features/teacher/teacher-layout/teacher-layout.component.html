@@ -20,25 +20,43 @@
       </button>
     </div>
 
-    <mat-nav-list class="nav-list">
-      <a mat-list-item 
-         *ngFor="let item of navigationItems"
-         [routerLink]="item.path" 
-         routerLinkActive="active"
-         class="nav-item">
-        <mat-icon class="nav-icon" 
-                  matListItemIcon>{{item.icon}}</mat-icon>
-        <span class="nav-label" 
-              [class.hidden]="isSidebarCollapsed">{{item.label}}</span>
-        
-        <span *ngIf="item.badge && !isSidebarCollapsed" 
-              class="badge"
-              [class]="item.path === 'messages' ? 'badge-warn' : 'badge-primary'">
-          {{item.badge > 99 ? '99+' : item.badge}}
-        </span>
-      </a>
-    </mat-nav-list>
+  <mat-nav-list class="nav-list">
+  <!-- Regular items -->
+  <a mat-list-item 
+     *ngFor="let item of navigationItems"
+     [routerLink]="item.path" 
+     routerLinkActive="active"
+     class="nav-item">
+    <mat-icon class="nav-icon" matListItemIcon>{{item.icon}}</mat-icon>
+    <span class="nav-label" [class.hidden]="isSidebarCollapsed">{{item.label}}</span>
+    <span *ngIf="item.badge && !isSidebarCollapsed" 
+          class="badge"
+          [class]="item.path === 'messages' ? 'badge-warn' : 'badge-primary'">
+      {{item.badge > 99 ? '99+' : item.badge}}
+    </span>
+  </a>
 
+  <!-- User Management Expansion Panel -->
+  <mat-expansion-panel [expanded]="!isSidebarCollapsed" 
+                       [hideToggle]="isSidebarCollapsed"
+                       class="nav-expansion-panel">
+    <mat-expansion-panel-header [class.collapsed]="isSidebarCollapsed">
+      <mat-panel-title>
+        <mat-icon>group</mat-icon>
+        <span class="nav-label" [class.hidden]="isSidebarCollapsed">User Management</span>
+      </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <a mat-list-item 
+       *ngFor="let item of userManagementItems"
+       [routerLink]="item.path" 
+       routerLinkActive="active"
+       class="nav-item sub-item">
+      <mat-icon class="nav-icon" matListItemIcon>{{item.icon}}</mat-icon>
+      <span class="nav-label">{{item.label}}</span>
+    </a>
+  </mat-expansion-panel>
+</mat-nav-list>
     <div class="sidebar-footer" [class.hidden]="isSidebarCollapsed">
       <div class="user-info">
         <mat-icon>account_circle</mat-icon>
@@ -50,7 +68,7 @@
     </div>
   </mat-sidenav>
 
-  <!-- Main Content -->
+  <!-- Rest of your template remains the same -->
   <mat-sidenav-content>
     <mat-toolbar color="primary" class="topbar">
       <button mat-icon-button 

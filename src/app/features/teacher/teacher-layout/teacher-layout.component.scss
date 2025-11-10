@@ -2,7 +2,7 @@
 @mixin card-shadow {
   box-shadow: var(--shadow-light);
   transition: var(--transition);
-  
+
   &:hover {
     box-shadow: var(--shadow-medium);
     transform: translateY(-2px);
@@ -12,7 +12,7 @@
 .layout-container {
   height: 100vh;
   background: var(--bg-light);
-  
+
   &.mobile {
     .sidebar {
       position: fixed;
@@ -27,7 +27,7 @@
     transition: margin-left 0.3s ease;
   }
 
-  .sidebar.collapsed ~ .mat-drawer-content {
+  .sidebar.collapsed~.mat-drawer-content {
     margin-left: var(--sidebar-collapsed-width) !important;
   }
 }
@@ -41,80 +41,80 @@
   border: none;
   @include card-shadow;
   transition: var(--transition);
-  
+
   &.collapsed {
     width: var(--sidebar-collapsed-width);
-    
+
     .sidebar-header .collapse-btn mat-icon {
       transform: rotate(180deg);
     }
   }
-  
+
   .sidebar-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     padding: 20px 16px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    
+
     .logo-container {
       display: flex;
       align-items: center;
       gap: 12px;
-      
+
       .logo-icon {
         font-size: 32px;
         width: 32px;
         height: 32px;
         color: var(--text-light);
       }
-      
+
       .logo-text {
         font-size: 24px;
         font-weight: 700;
         transition: opacity 0.3s ease;
-        
+
         &.hidden {
           opacity: 0;
           width: 0;
         }
       }
     }
-    
+
     .collapse-btn {
       color: var(--text-light);
       opacity: 0.8;
-      
+
       &:hover {
         opacity: 1;
         background: rgba(255, 255, 255, 0.1);
       }
-      
+
       mat-icon {
         transition: transform 0.3s ease;
       }
     }
   }
-  
+
   .nav-list {
     padding: 16px 8px;
-    
+
     .nav-item {
       color: rgba(255, 255, 255, 0.85);
       border-radius: var(--border-radius);
       margin: 4px 0;
       transition: var(--transition);
       position: relative;
-      
+
       &:hover {
         background: rgba(255, 255, 255, 0.1);
         color: var(--text-light);
       }
-      
+
       &.active {
         background: rgba(255, 255, 255, 0.15);
         color: var(--text-light);
-        
+
         &::before {
           content: '';
           position: absolute;
@@ -127,23 +127,23 @@
           border-radius: 0 4px 4px 0;
         }
       }
-      
+
       .nav-icon {
         color: inherit;
         margin-right: 16px;
         transition: margin 0.3s ease;
       }
-      
+
       .nav-label {
         transition: opacity 0.3s ease;
         font-weight: 500;
-        
+
         &.hidden {
           opacity: 0;
           width: 0;
         }
       }
-      
+
       .badge {
         position: absolute;
         right: 16px;
@@ -157,51 +157,51 @@
         font-weight: 600;
         min-width: 20px;
         text-align: center;
-        
+
         &.badge-primary {
           background: var(--primary-light);
           color: var(--primary-dark);
         }
-        
+
         &.badge-warn {
           background: var(--warn-color);
         }
       }
     }
   }
-  
+
   .sidebar-footer {
     padding: 16px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     margin-top: auto;
-    
+
     &.hidden {
       opacity: 0;
       height: 0;
       padding: 0;
       overflow: hidden;
     }
-    
+
     .user-info {
       display: flex;
       align-items: center;
       gap: 12px;
-      
+
       mat-icon {
         font-size: 40px;
         width: 40px;
         height: 40px;
       }
-      
+
       .user-details {
         display: flex;
         flex-direction: column;
-        
+
         .user-name {
           font-weight: 600;
           font-size: 14px;
         }
-        
+
         .user-role {
           font-size: 12px;
           opacity: 0.8;
@@ -216,52 +216,52 @@
   height: var(--header-height);
   padding: 0 24px;
   @include card-shadow;
-  
+
   .breadcrumb {
     display: flex;
     align-items: center;
     gap: 8px;
     margin-left: 16px;
-    
+
     .app-title {
       font-size: 20px;
       font-weight: 500;
     }
-    
+
     .current-page {
       color: rgba(255, 255, 255, 0.8);
       font-size: 16px;
     }
-    
+
     mat-icon {
       font-size: 18px;
       width: 18px;
       height: 18px;
     }
   }
-  
+
   .topbar-actions {
     display: flex;
     align-items: center;
     gap: 8px;
-    
+
     .action-btn {
       color: #005cbb;
-      
+
       &:hover {
         color: var(--text-light);
         background: #005cbb;
       }
     }
-    
+
     .user-menu {
       .user-btn {
         color: #005cbb;
-        
+
         mat-icon:first-child {
           margin-right: 8px;
         }
-        
+
         mat-icon:last-child {
           margin-left: 4px;
         }
@@ -277,22 +277,22 @@
   background: var(--bg-card);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   padding: 20px 24px;
-  
+
   .footer-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
     color: var(--text-secondary);
     font-size: 14px;
-    
+
     .footer-links {
       display: flex;
       gap: 24px;
-      
+
       a {
         color: inherit;
         text-decoration: none;
-        
+
         &:hover {
           color: var(--primary-color);
         }
@@ -306,24 +306,24 @@
   .contentWrapper {
     padding: 16px;
   }
-  
-  
+
+
   .topbar {
     padding: 0 16px;
-    
+
     .breadcrumb {
       .app-title {
         display: none;
       }
     }
-    
+
     .topbar-actions {
       .user-menu .user-btn span {
         display: none;
       }
     }
   }
-  
+
   .footer .footer-content {
     flex-direction: column;
     gap: 12px;
@@ -341,4 +341,43 @@
   width: 0;
   height: 0;
   overflow: hidden;
+}
+
+
+.nav-expansion-panel {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.nav-expansion-panel .mat-expansion-panel-header {
+  padding: 0 16px;
+  height: 48px;
+
+  mat-icon {
+    color: var(--text-light);
+    margin-right: 16px;
+
+  }
+}
+
+.nav-expansion-panel .mat-expansion-panel-header.collapsed {
+  padding: 0 8px;
+}
+
+.mat-expansion-indicator {
+  color: var(--text-light);
+
+}
+
+.nav-expansion-panel .mat-expansion-panel-content {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.sub-item {
+  padding-left: 32px !important;
+}
+
+::ng-deep .nav-expansion-panel .mat-expansion-indicator * {
+  color: var(--text-light) !important;
+  fill: var(--text-light) !important;
 }

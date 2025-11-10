@@ -94,7 +94,7 @@
         <mat-header-cell *matHeaderCellDef mat-sort-header>Student Name</mat-header-cell>
         <mat-cell *matCellDef="let student">
           <div class="student-info">
-            <div class="avatar" [style.background-color]="getAvatarColor(student.name)">
+            <div class="avatar" [style.background-color]="getAvatarColor(student.firstName)">
               {{ student.avatar }}
             </div>
             <div class="student-details">

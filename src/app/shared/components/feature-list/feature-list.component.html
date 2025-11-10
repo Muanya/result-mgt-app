@@ -1,5 +1,5 @@
 @if (entityData$ | async; as entityData) {
-<app-entity-list [title]="title" [data]="entityData">
+<app-entity-list [title]="title" [data]="entityData" (view)="onView($event)" (createNew)="goToCreate()">
 </app-entity-list>
 } @else {
 <app-loader type="spinner" message="Loading Data" [showProgress]="false" [fullScreen]="true">

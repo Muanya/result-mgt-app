@@ -1,60 +1,216 @@
-@if(enrollment){
-<div class="detail-container">
-    <mat-card class="detail-card">
-        <mat-card-header>
-            <mat-card-title>{{ enrollment.enrollmentName }}</mat-card-title>
-            <mat-card-subtitle>
-                Course: {{ enrollment.course.code }} - {{ enrollment.course.title }}
-            </mat-card-subtitle>
-        </mat-card-header>
-        <mat-card-content>
-            <p><strong>Date:</strong> {{ enrollment.startDate | date:'fullDate' }}</p>
-        </mat-card-content>
-
-        <mat-card-actions>
-      <!-- NEW Mass Result Button -->
-      <button mat-raised-button color="accent" (click)="goToMassResult()">
-        ➕ Add Results for All Students
+<div class="enrollment-detail-container">
+  <!-- Header Section -->
+  <div class="header-section">
+    
+    <div class="header-actions">
+      <button mat-raised-button 
+              [color]="isEditMode ? 'warn' : 'primary'" 
+              (click)="toggleEditMode()">
+        <mat-icon>{{ isEditMode ? 'cancel' : 'edit' }}</mat-icon>
+        {{ isEditMode ? 'Cancel Edit' : 'Edit Enrollment' }}
       </button>
-    </mat-card-actions>
+      
+      @if(isEditMode){
+        <button mat-raised-button color="accent" (click)="saveChanges()">
+          <mat-icon>save</mat-icon>
+          Save Changes
+        </button>
+      }
+    </div>
+  </div>
+
+  @if(enrollment){
+  <div class="detail-content">
+    <!-- Enrollment Information Card -->
+    <mat-card class="detail-card">
+      <mat-card-header class="card-header">
+        <div class="card-title-section">
+          @if(isEditMode){
+            <mat-form-field appearance="outline" class="title-field">
+              <input matInput [(ngModel)]="editedEnrollment!.enrollmentName" 
+                     placeholder="Enrollment Name">
+            </mat-form-field>
+          } @else {
+            <mat-card-title class="enrollment-title">
+              {{ enrollment.enrollmentName }}
+            </mat-card-title>
+          }
+          
+          <mat-card-subtitle class="course-subtitle">
+            <mat-icon class="course-icon">school</mat-icon>
+            Course: {{ enrollment.course.code }} - {{ enrollment.course.title }}
+          </mat-card-subtitle>
+        </div>
+        
+        <div class="enrollment-status">
+          <mat-chip [color]="getStatusColor()" selected>
+            {{ enrollment.status || 'Active' }}
+          </mat-chip>
+        </div>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <div class="enrollment-meta">
+          <div class="meta-item">
+            <mat-icon>event</mat-icon>
+            <span><strong>Start Date:</strong> {{ enrollment.startDate | date:'fullDate' }}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>people</mat-icon>
+            <span><strong>Students:</strong> {{ enrollment.students.length || 0 }}</span>
+          </div>
+          <div class="meta-item">
+            <mat-icon>person</mat-icon>
+            <span><strong>Lecturers:</strong> {{ enrollment.magisters.length || 0 }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <!-- Action Buttons -->
+      <mat-card-actions class="action-buttons">
+        <button mat-raised-button color="accent" (click)="goToMassResult()" 
+                class="action-button">
+          <mat-icon>playlist_add</mat-icon>
+          Add Results for All Students
+        </button>
+        
+        @if(isEditMode){
+          <button mat-stroked-button color="warn" (click)="openDeleteDialog()" 
+                  class="action-button">
+            <mat-icon>delete</mat-icon>
+            Delete Enrollment
+          </button>
+        }
+      </mat-card-actions>
     </mat-card>
 
-    <!-- Lecturers -->
-    <mat-card class="detail-card">
-        <mat-card-header>
-            <mat-card-title>Lecturers</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            <ul>
-                @for (lec of enrollment.magisters; track $index) {
-                <li >
-                    👨‍🏫 {{ lec.firstName }} {{ lec.lastName }} ({{ lec.email }})
-                </li>
+    <!-- Two Column Layout -->
+    <div class="two-column-layout">
+      <!-- Lecturers Column -->
+      <div class="column">
+        <mat-card class="detail-card lecturer-card">
+          <mat-card-header class="card-header">
+            <mat-card-title>
+              <mat-icon class="section-icon">record_voice_over</mat-icon>
+              Lecturers
+            </mat-card-title>
+            <button mat-icon-button *ngIf="isEditMode" (click)="manageLecturers()">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </mat-card-header>
+          
+          <mat-card-content>
+            @if(enrollment.magisters && enrollment.magisters.length > 0){
+              <div class="list-container">
+                @for (lec of enrollment.magisters; track lec.id) {
+                  <div class="list-item">
+                    <div class="avatar-container">
+                      <div class="avatar lecturer-avatar">
+                        {{ getInitials(lec.firstName, lec.lastName) }}
+                      </div>
+                    </div>
+                    <div class="item-details">
+                      <p class="item-name">{{ lec.firstName }} {{ lec.lastName }}</p>
+                      <p class="item-email">{{ lec.email }}</p>
+                    </div>
+                    @if(isEditMode){
+                      <button mat-icon-button color="warn" (click)="removeLecturer(lec.id)">
+                        <mat-icon>remove_circle</mat-icon>
+                      </button>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <mat-icon>record_voice_over</mat-icon>
+                <p>No lecturers assigned</p>
+                @if(isEditMode){
+                  <button mat-stroked-button (click)="manageLecturers()">
+                    <mat-icon>add</mat-icon>
+                    Add Lecturers
+                  </button>
+                }
+              </div>
             }
-            </ul>
-        </mat-card-content>
-    </mat-card>
+          </mat-card-content>
+        </mat-card>
+      </div>
 
-    <!-- Students with Add Result button -->
-    <mat-card class="detail-card">
-        <mat-card-header>
-            <mat-card-title>Enrolled Students</mat-card-title>
-        </mat-card-header>
-        <mat-card-content>
-            <div *ngFor="let student of enrollment.students" class="student-row">
-                <div class="student-info">
-                    <p>
-                        <strong>{{ student.firstName }} {{ student.lastName }}</strong> <br>
-                        <small>{{ student.email }}</small>
-                    </p>
-                </div>
-                <button mat-raised-button color="primary" (click)="goToAddResult(student.id)">
-                    ➕ Add Result
-                </button>
-            </div>
-        </mat-card-content>
-    </mat-card>
+      <!-- Students Column -->
+      <div class="column">
+        <mat-card class="detail-card student-card">
+          <mat-card-header class="card-header">
+            <mat-card-title>
+              <mat-icon class="section-icon">group</mat-icon>
+              Enrolled Students
+              <span class="student-count">({{ enrollment.students.length || 0 }})</span>
+            </mat-card-title>
+            
+            @if(isEditMode){
+              <button mat-raised-button color="primary" (click)="openAddStudentsDialog()">
+                <mat-icon>person_add</mat-icon>
+                Add Students
+              </button>
+            }
+          </mat-card-header>
+          
+          <mat-card-content>
+            @if(enrollment.students && enrollment.students.length > 0){
+              <div class="list-container">
+                @for (student of enrollment.students; track student.id) {
+                  <div class="list-item student-item">
+                    <div class="avatar-container">
+                      <div class="avatar student-avatar">
+                        {{ getInitials(student.firstName, student.lastName) }}
+                      </div>
+                    </div>
+                    
+                    <div class="item-details">
+                      <p class="item-name">{{ student.firstName }} {{ student.lastName }}</p>
+                      <p class="item-email">{{ student.email }}</p>
+                    </div>
+                    
+                    <div class="student-actions">
+                      <button mat-raised-button color="primary" 
+                              (click)="goToAddResult(student.id)" 
+                              class="add-result-btn">
+                        <mat-icon>score</mat-icon>
+                        Add Result
+                      </button>
+                      
+                      @if(isEditMode){
+                        <button mat-icon-button color="warn" 
+                                (click)="removeStudent(student.id)">
+                          <mat-icon>remove_circle</mat-icon>
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            } @else {
+              <div class="empty-state">
+                <mat-icon>group</mat-icon>
+                <p>No students enrolled</p>
+                @if(isEditMode){
+                  <button mat-raised-button color="primary" (click)="openAddStudentsDialog()">
+                    <mat-icon>person_add</mat-icon>
+                    Add Students
+                  </button>
+                }
+              </div>
+            }
+          </mat-card-content>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+  } @else {
+    <!-- Loading State -->
+    <div class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading enrollment details...</p>
+    </div>
+  }
 </div>
-}@else {
-<div class="loading">Loading enrollment details...</div>
-}

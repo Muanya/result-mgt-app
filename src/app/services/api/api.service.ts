@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
-import { AuthResponse, RegisterData } from '../../shared/models/shared.model';
+import { AuthResponse, EnrollmentDetail, RegisterData } from '../../shared/models/shared.model';
 
 @Injectable({
   providedIn: 'root'
@@ -77,12 +77,16 @@ export class ApiService {
     return this.getData('api/magisters');
   }
 
+  getAllEnrollments(): Observable<any[]> {
+    return this.getData('api/courses/enrollments');
+  }
+
   createEnrollment(enrollment: any): Observable<any> {
     return this.postData('api/courses/enroll', enrollment);
   }
 
   getEnrollmentById(id: number): Observable<any> {
-    return this.getData(`api/courses/enrollment/${id}`);
+    return this.getData(`api/courses/enrollments/${id}`);
   }
 
   saveResult(result: any): Observable<any> {
@@ -123,6 +127,33 @@ export class ApiService {
   getStudentsByCourseId(courseId: number): Observable<any[]> {
     return this.getData(`api/courses/studentsByCourse/${courseId}`);
   }
+
+  // enrollments
+  addStudentsToEnrollment(id: number, studentIds: number[]): Observable<any>{
+    return this.getData('')
+
+  }
+
+  updateEnrollment(id: number, detail: EnrollmentDetail ){
+     return this.getData('')
+  }
+
+  deleteEnrollment(id: number, ){
+     return this.getData('')
+  }
+
+
+ 
+  updateCourse(courseId: number, course: any): Observable<any> {
+    return this.postData(`/api/courses/${courseId}`, course);
+  }
+
+  // Add result for student
+  addStudentWithResult(id: any, resultData: any): Observable<any> {
+    return this.http.post('/api/results', resultData);
+  }
+
+
 
 
 }

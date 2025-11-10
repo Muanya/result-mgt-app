@@ -14,19 +14,21 @@ import { ViewAllResultsComponent } from './view-all-results/view-all-results.com
 
 export const routes: Routes = [
     { path: 'dashboard', component: DashboardComponent },
-    { path: 'courses', component: FeatureListComponent, data: { title: 'course' }  },
     { path: 'students', component: StudentListComponent },
     { path: 'students/add', component: StudentAddComponent },
     { path: 'students/detail', component: StudentDetailComponent },
-    { path: 'course-detail/:id', component: CourseDetailComponent },
     { path: 'results', component: ViewAllResultsComponent },
     { path: 'results/entry', component: ResultDetailComponent },
 
     { path: 'magisters', component: FeatureListComponent, data: { title: 'magister' } },
+    { path: 'enrollments', component: FeatureListComponent, data: { title: 'enrollment' } },
 
+    { path: 'courses', component: FeatureListComponent, data: { title: 'course' } },
+    { path: 'courses/detail/:id', component: CourseDetailComponent },
 
-    { path: 'create', component: CreateEnrollmentComponent },
-    { path: 'enrollment-detail/:id', component: EnrollmentDetailComponent },
+    { path: 'enrollments/create', component: CreateEnrollmentComponent },
+    { path: 'enrollments/detail/:id', component: EnrollmentDetailComponent },
+
     { path: 'grade-dist', component: GradeDistributionComponent },
     { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 ];

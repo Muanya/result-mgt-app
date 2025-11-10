@@ -1,5 +1,5 @@
 import { Component, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
-import { EntityListData, NavItem, Student } from '../../models/shared.model';
+import { EntityListData, UserDetail } from '../../models/shared.model';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
@@ -33,7 +33,7 @@ export class FeatureListComponent {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   displayedColumns = ['admissionNo', 'firstName', 'lastName', 'class', 'actions'];
-  dataSource = new MatTableDataSource<Student>([]);
+  dataSource = new MatTableDataSource<UserDetail>([]);
   total = 0;
   isBrowser = false;
 
@@ -83,6 +83,21 @@ export class FeatureListComponent {
           ({ id: `${magister.id}`, title: `${magister.firstName} ${magister.lastName}`, subtitle: magister.email, type: 'Magister', icon: 'person' } as EntityListData)
         ))
       );
+    } else if (this.title.toLowerCase() == 'enrollments') {
+
+      return this.apiService.getAllEnrollments().pipe(
+        take(1),
+        map(res => {
+
+          const result = res.map((enrollment: { id: any, enrollmentName: any; course: any; startDate: any; }) =>
+            ({ id: `${enrollment.id}`, title: `${enrollment.enrollmentName}`, subtitle: '', type: 'Enrollment', icon: 'school' } as EntityListData)
+          );
+
+
+          return result;
+        })
+      );
+
     } else {
       return this.apiService.getAllCourses().pipe(
         take(1),
@@ -106,6 +121,17 @@ export class FeatureListComponent {
       this.router.navigate(['/public/']);
 
     });
+  }
+
+  onView(data: EntityListData) {
+    this.router.navigate(['detail', data.id], { relativeTo: this.route });
+  }
+
+  goToCreate(){
+    console.log('caled');
+    
+        this.router.navigate(['create'], { relativeTo: this.route });
+
   }
 
 }

@@ -1,0 +1,143 @@
+<div class="add-student-result-dialog">
+  <!-- Header -->
+  <div mat-dialog-title class="dialog-header">
+    <h2>Add Student with Result</h2>
+    <button mat-icon-button (click)="onCancel()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div mat-dialog-content class="dialog-content">
+    <!-- Course Info -->
+    <div class="course-info">
+      <h3>{{ data.course.code }} - {{ data.course.title }}</h3>
+      <p class="course-description">{{ data.course.description }}</p>
+    </div>
+
+    <!-- Student Selection Section -->
+    <div class="selection-section">
+      <h4>1. Select Student</h4>
+      
+      <!-- Search -->
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Students</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Search by name, email, or student ID">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <!-- Selected Student Info -->
+      <div *ngIf="selectedStudent" class="selected-student-info">
+        <div class="selected-student-card">
+          <div class="student-avatar">
+            {{ getInitials(selectedStudent.firstName, selectedStudent.lastName) }}
+          </div>
+          <div class="student-details">
+            <h4>{{ selectedStudent.firstName }} {{ selectedStudent.lastName }}</h4>
+            <p>{{ selectedStudent.email }}</p>
+            <p class="student-id">{{ selectedStudent.id }}</p>
+          </div>
+          <button mat-icon-button color="warn" (click)="clearSelection()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <!-- Students List -->
+      <div class="students-list-container">
+        <div *ngIf="isLoading" class="loading-state">
+          <mat-spinner diameter="32"></mat-spinner>
+          <span>Loading students...</span>
+        </div>
+
+        <div *ngIf="!isLoading && filteredStudents.length === 0" class="empty-state">
+          <mat-icon>group_off</mat-icon>
+          <p>No students found matching your search</p>
+        </div>
+
+        <div *ngIf="!isLoading && filteredStudents.length > 0" class="students-grid">
+          <div *ngFor="let student of filteredStudents" 
+               class="student-item"
+               [class.selected]="isStudentSelected(student)"
+               (click)="selectStudent(student)">
+            <div class="student-avatar-small">
+              {{ getInitials(student.firstName, student.lastName) }}
+            </div>
+            <div class="student-info">
+              <h5>{{ student.firstName }} {{ student.lastName }}</h5>
+              <p>{{ student.email }}</p>
+              <span class="student-meta">{{ student.id }}</span>
+            </div>
+            <mat-icon class="check-icon" *ngIf="isStudentSelected(student)">
+              check_circle
+            </mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result Form Section -->
+    <div class="result-section" *ngIf="selectedStudent">
+      <h4>2. Add Result</h4>
+      
+      <div class="form-grid">
+        <!-- Enrollment Date -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Enrollment Date</mat-label>
+          <input matInput [matDatepicker]="picker" [formControl]="enrollmentDateControl">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="enrollmentDateControl.hasError('required')">
+            Enrollment date is required
+          </mat-error>
+        </mat-form-field>
+
+        <!-- Grade -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Grade</mat-label>
+          <mat-select [formControl]="gradeControl" (selectionChange)="onGradeChange()">
+            <mat-option *ngFor="let grade of grades" [value]="grade.value">
+              {{ grade.label }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="gradeControl.hasError('required')">Grade is required</mat-error>
+        </mat-form-field>
+
+        <!-- Score -->
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Score</mat-label>
+          <input matInput type="number" [formControl]="scoreControl" 
+                 (input)="onScoreChange()"
+                 min="0" max="100" step="0.1">
+          <span matSuffix>%</span>
+          <mat-error *ngIf="scoreControl.hasError('required')">Score is required</mat-error>
+          <mat-error *ngIf="scoreControl.hasError('min')">Score must be at least 0</mat-error>
+          <mat-error *ngIf="scoreControl.hasError('max')">Score cannot exceed 100</mat-error>
+        </mat-form-field>
+
+        <!-- Remarks -->
+        <mat-form-field appearance="outline" class="full-width remarks-field">
+          <mat-label>Remarks (Optional)</mat-label>
+          <textarea matInput [formControl]="remarksControl" rows="3" 
+                    placeholder="Additional comments about the student's performance..."></textarea>
+        </mat-form-field>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      Cancel
+    </button>
+    <button mat-raised-button 
+            color="primary" 
+            (click)="onSave()"
+            [disabled]="!isFormValid() || isLoading"
+            class="save-button">
+      <mat-spinner diameter="20" *ngIf="isLoading" class="button-spinner"></mat-spinner>
+      <mat-icon *ngIf="!isLoading">person_add</mat-icon>
+      Add Student with Result
+    </button>
+  </div>
+</div>

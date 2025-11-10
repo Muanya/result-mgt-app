@@ -1,72 +1,350 @@
 <!-- course-detail.component.html -->
- @if (courseData$ | async; as data) {
-
 <div class="course-detail-container">
-    <!-- Course Header -->
-    <mat-card class="course-header">
-        <h1>{{ data.course.title }}</h1>
-        <p class="subtitle">{{ data.course.code }}</p>
-        <div class="course-meta">
-            <span><mat-icon>schedule</mat-icon> Duration: {{ data.course.creditUnit }} week(s)</span>
+  <!-- Header Section -->
+  <div class="header-section">
+    <button mat-icon-button class="back-button" (click)="goBack()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    
+    <div class="header-content">
+      <div class="course-header">
+        @if (isEditMode) {
+        <div class="edit-title">
+          <mat-form-field appearance="outline" class="title-field">
+            <input matInput [formControl]="courseTitleControl" placeholder="Course Title">
+            @if (courseTitleControl.hasError('required')) {
+            <mat-error>Course title is required</mat-error>
+            }
+          </mat-form-field>
         </div>
-    </mat-card>
-
-    <div class="content-sections">
-        <!-- Enrollments Section -->
-        <mat-card class="section-card">
-            <mat-card-header>
-                <mat-card-title>📚 Enrollments</mat-card-title>
-            </mat-card-header>
-            <mat-divider></mat-divider>
-            <mat-card-content>
-                <mat-list>
-                    <mat-list-item *ngFor="let enrollment of data.enrollments">
-                        <mat-icon matListIcon>how_to_reg</mat-icon>
-                        <h4 matLine>{{ enrollment.name }}</h4>
-                        <p matLine>Enrolled on {{ enrollment.date | date }}</p>
-                    </mat-list-item>
-                </mat-list>
-            </mat-card-content>
-        </mat-card>
-
-        <!-- Completed Students Section -->
-        <mat-card class="section-card">
-            <mat-card-header>
-                <mat-card-title>✅ Completed Students</mat-card-title>
-            </mat-card-header>
-            <mat-divider></mat-divider>
-            <mat-card-content>
-                <table mat-table [dataSource]="data.completedStudents" class="mat-elevation-z2 full-width">
-                    <ng-container matColumnDef="name">
-                        <th mat-header-cell *matHeaderCellDef> Student </th>
-                        <td mat-cell *matCellDef="let student">{{ student.name }}</td>
-                    </ng-container>
-
-
-
-                    <tr mat-header-row *matHeaderRowDef="['name']"></tr>
-                    <tr mat-row *matRowDef="let row; columns: ['name'];"></tr>
-                </table>
-            </mat-card-content>
-        </mat-card>
-
-        <!-- Not Completed Section -->
-        <mat-card class="section-card">
-            <mat-card-header>
-                <mat-card-title>⏳ Not Completed Students</mat-card-title>
-            </mat-card-header>
-            <mat-divider></mat-divider>
-            <mat-card-content>
-                <mat-list>
-                    @for (student of data.notCompletedStudents; track student.id) {
-                    <mat-list-item>
-                        <mat-icon matListIcon>pending</mat-icon>
-                        <h4 matLine>{{ student.name }}</h4>
-                    </mat-list-item>
-                    }
-                </mat-list>
-            </mat-card-content>
-        </mat-card>
+        } @else {
+        <h1 class="course-title">{{ course?.title }}</h1>
+        }
+        <div class="course-code">{{ course?.code }}</div>
+      </div>
+      
+      <div class="header-actions">
+        @if (isEditMode) {
+        <button mat-stroked-button color="warn" (click)="toggleEditMode()">
+          <mat-icon>cancel</mat-icon>
+          Cancel
+        </button>
+        <button mat-raised-button color="primary" (click)="saveCourse()" 
+                [disabled]="courseTitleControl.invalid || isLoading">
+          <mat-icon>save</mat-icon>
+          Save Changes
+        </button>
+        } @else {
+        <button mat-stroked-button color="primary" (click)="toggleEditMode()">
+          <mat-icon>edit</mat-icon>
+          Edit Course
+        </button>
+        <button mat-raised-button color="primary" (click)="onAddStudent()">
+          <mat-icon>person_add</mat-icon>
+          Add Student with Result
+        </button>
+        }
+      </div>
     </div>
+  </div>
+
+  @if(isLoading && !course){
+  <app-loader type="spinner" [fullScreen]="true", [showProgress]="false"></app-loader>
+  } @else if (course) {
+  <div class="course-content">
+    <!-- Navigation Tabs -->
+    <nav mat-tab-nav-bar class="course-tabs">
+      <a mat-tab-link 
+         [active]="activeTab === 'overview'" 
+         (click)="onTabChange('overview')">
+        <mat-icon>info</mat-icon>
+        Overview
+      </a>
+      <a mat-tab-link 
+         [active]="activeTab === 'students'" 
+         (click)="onTabChange('students')">
+        <mat-icon>group</mat-icon>
+        Students
+        <span class="tab-badge">{{ students.length }}</span>
+      </a>
+      <a mat-tab-link 
+         [active]="activeTab === 'enrollments'" 
+         (click)="onTabChange('enrollments')">
+        <mat-icon>class</mat-icon>
+        Enrollments
+        <span class="tab-badge">{{ enrollments.length }}</span>
+      </a>
+      <a mat-tab-link 
+         [active]="activeTab === 'analytics'" 
+         (click)="onTabChange('analytics')">
+        <mat-icon>analytics</mat-icon>
+        Analytics
+      </a>
+    </nav>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Overview Tab -->
+      @if (activeTab === 'overview') {
+      <div class="overview-tab">
+        <div class="overview-grid">
+          <!-- Course Information Card -->
+          <mat-card class="info-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="card-icon">school</mat-icon>
+                Course Information
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="info-grid">
+                <div class="info-item">
+                  <label>Course Code</label>
+                  <span class="info-value">{{ course.code }}</span>
+                </div>
+                <div class="info-item">
+                  <label>Credits</label>
+                  <span class="info-value">{{ course.creditUnit }} credits</span>
+                </div>
+                <div class="info-item">
+                  <label>Department</label>
+                  <span class="info-value"> ECE</span>
+                </div>
+                <div class="info-item">
+                  <label>Semester</label>
+                  <span class="info-value"> 1 </span>
+                </div>
+                <div class="info-item">
+                  <label>Academic Year</label>
+                  <span class="info-value">2025</span>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Description Card -->
+          <mat-card class="description-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="card-icon">description</mat-icon>
+                Course Description
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <p class="description-text">a dummy description</p>
+            </mat-card-content>
+          </mat-card>
+
+          <!-- Statistics Card -->
+          <mat-card class="stats-card">
+            <mat-card-header>
+              <mat-card-title>
+                <mat-icon class="card-icon">assessment</mat-icon>
+                Student Statistics
+              </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <div class="stat-number">{{ getCompletionStats().total }}</div>
+                  <div class="stat-label">Total Students</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number text-success">{{ getCompletionStats().completed }}</div>
+                  <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-number text-warning">{{ getCompletionStats().ongoing }}</div>
+                  <div class="stat-label">Ongoing</div>
+                </div>
+              </div>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div>
+      }
+
+      <!-- Students Tab -->
+      @if (activeTab === 'students') {
+      <div class="students-tab">
+        <!-- Students Header with Filters -->
+        <div class="students-header">
+          <div class="filters-section">
+            <mat-form-field appearance="outline" class="search-field">
+              <mat-label>Search Students</mat-label>
+              <input matInput 
+                     [(ngModel)]="searchTerm" 
+                     (input)="onSearchChange(searchTerm)"
+                     placeholder="Search by name, email, or student ID">
+              <mat-icon matSuffix>search</mat-icon>
+            </mat-form-field>
+
+            <mat-button-toggle-group 
+              [(value)]="completionFilter" 
+              (change)="onCompletionFilterChange(completionFilter)"
+              class="filter-toggle">
+              <mat-button-toggle value="all">All Students</mat-button-toggle>
+              <mat-button-toggle value="completed">Completed</mat-button-toggle>
+              <mat-button-toggle value="ongoing">Ongoing</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+
+          <div class="students-summary">
+            <span class="summary-text">
+              Showing {{ filteredStudents.length }} of {{ students.length }} students
+            </span>
+          </div>
+        </div>
+
+        <!-- Students List -->
+        <div class="students-list">
+          @if (filteredStudents.length === 0) {
+          <div class="empty-state">
+            <mat-icon>group_off</mat-icon>
+            <h3>No students found</h3>
+            <p>No students match your current filters.</p>
+          </div>
+          } @else {
+          <div class="student-cards-grid">
+            @for (student of filteredStudents; track student.id) {
+            <mat-card class="student-card" 
+                      [class.completed]="true">
+              <div class="student-card-content">
+                <div class="student-avatar" (click)="onStudentClick(student)">
+                  {{ getInitials(student.firstName, student.lastName) }}
+                </div>
+                
+                <div class="student-info" (click)="onStudentClick(student)">
+                  <h3 class="student-name">{{ student.firstName }} {{ student.lastName }}</h3>
+                  <p class="student-email">{{ student.email }}</p>
+                  <p class="student-id">{{ student.id }}</p>
+                  
+                  <div class="student-meta">
+                    <span class="enrollment-date">
+                      <mat-icon>event</mat-icon>
+                      {{ student.enrollmentDate | date:'MMM yyyy' }}
+                    </span>
+                    <!-- @if (student.completed && student.grade) { -->
+                    <span class="student-grade" [class]="getGradeColor('A')">
+                      Grade: A
+                    </span>
+                    <!-- } -->
+                  </div>
+                </div>
+
+                <div class="student-actions">
+                  <!-- @if (!student.completed) { -->
+                  <button mat-raised-button color="primary" 
+                          (click)="onAddResult(student)"
+                          class="add-result-btn">
+                    <mat-icon>score</mat-icon>
+                    Add Result
+                  </button>
+                  <!-- } -->
+                  
+                  <div class="completion-status">
+                    <!-- @if (student.completed) { -->
+                    <mat-icon class="status-icon completed">check_circle</mat-icon>
+                    <span class="status-text">Completed</span>
+                    <!-- } @else {
+                    <mat-icon class="status-icon ongoing">schedule</mat-icon>
+                    <span class="status-text">Ongoing</span>
+                    } -->
+                  </div>
+                </div>
+              </div>
+            </mat-card>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Enrollments Tab -->
+      @if (activeTab === 'enrollments') {
+      <div class="enrollments-tab">
+        <div class="enrollments-header">
+          <h2>Course Enrollments</h2>
+          <p>All enrollment sessions for this course</p>
+        </div>
+
+        <div class="enrollments-list">
+          @if (enrollments.length === 0) {
+          <div class="empty-state">
+            <mat-icon>class</mat-icon>
+            <h3>No enrollments found</h3>
+            <p>This course doesn't have any enrollment sessions yet.</p>
+          </div>
+          } @else {
+          <div class="enrollment-cards-grid">
+            @for (enrollment of enrollments; track enrollment.id) {
+            <mat-card class="enrollment-card">
+              <div class="enrollment-card-content">
+                <div class="enrollment-header">
+                  <h3 class="enrollment-name">{{ enrollment.enrollmentName }}</h3>
+                  <mat-chip  highlighted>
+                    {{ enrollment.status }}
+                  </mat-chip>
+                </div>
+                
+                <div class="enrollment-details">
+                  <div class="detail-item">
+                    <mat-icon>event</mat-icon>
+                    <span>
+                      <strong>Start:</strong> {{ enrollment.startDate | date:'mediumDate' }}
+                    </span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>event_available</mat-icon>
+                    <span>
+                      <strong>End:</strong> {{ enrollment.startDate | date:'mediumDate' }}
+                    </span>
+                  </div>
+                  <div class="detail-item">
+                    <mat-icon>group</mat-icon>
+                    <span>
+                      <strong>Students:</strong> {{ enrollment.students.length }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="enrollment-actions">
+                  <button mat-stroked-button color="primary" 
+                          (click)="viewEnrollment(enrollment)">
+                    <mat-icon>visibility</mat-icon>
+                    View Enrollment
+                  </button>
+                </div>
+              </div>
+            </mat-card>
+            }
+          </div>
+          }
+        </div>
+      </div>
+      }
+
+      <!-- Analytics Tab -->
+      @if (activeTab === 'analytics') {
+      <div class="analytics-tab">
+        <div class="analytics-placeholder">
+          <mat-icon>analytics</mat-icon>
+          <h3>Analytics Dashboard</h3>
+          <p>Course analytics and performance metrics will be displayed here.</p>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+  } @else if (!isLoading && !course) {
+  <div class="error-container">
+    <mat-icon>error_outline</mat-icon>
+    <h3>Course Not Found</h3>
+    <p>The requested course could not be loaded.</p>
+    <button mat-raised-button color="primary" (click)="goBack()">
+      Back to Courses
+    </button>
+  </div>
+  }
 </div>
- }

@@ -10,6 +10,7 @@ import { MatListModule } from '@angular/material/list';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
 import { take } from 'rxjs';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 interface NavigationItem {
   path: string;
@@ -30,6 +31,7 @@ interface NavigationItem {
     MatIconModule,
     MatButtonModule,
     MatListModule,
+    MatExpansionModule
 
   ],
   templateUrl: './teacher-layout.component.html',
@@ -42,16 +44,19 @@ export class TeacherLayoutComponent {
   currentYear = new Date().getFullYear();
   isMobile = false;
 
-  navigationItems: NavigationItem[] = [
-    { path: 'dashboard', label: 'Dashboard', icon: 'dashboard', },
-    { path: 'students', label: 'Students', icon: 'people', },
-    { path: 'courses', label: 'Courses', icon: 'book', },
-    { path: 'results', label: 'Results', icon: 'bar_chart', },
-    { path: 'magisters', label: 'Magisters', icon: 'menu_book' },
-    { path: 'schedule', label: 'Schedule', icon: 'calendar_today' },
+   navigationItems: NavigationItem[] = [
+    { path: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+    { path: 'courses', label: 'Courses', icon: 'book' },
+    { path: 'results', label: 'Results', icon: 'bar_chart' },
+    { path: 'enrollments', label: 'Enrollments', icon: 'school' },
     { path: 'messages', label: 'Messages', icon: 'message', badge: 5 }
   ];
 
+  // User management group items
+  userManagementItems: NavigationItem[] = [
+    { path: 'students', label: 'Students', icon: 'people' },
+    { path: 'magisters', label: 'Magisters', icon: 'people' }
+  ];
 
 
 

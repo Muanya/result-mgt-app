@@ -1,15 +1,6 @@
-import e from "express";
 import { UserRole } from "./shared.enum";
 
-export interface Student {
-  id?: number;
-  admissionNo: string;
-  firstName: string;
-  lastName?: string;
-  dob?: string; // ISO date
-  classId?: number;
-  gender?: 'M' | 'F' | 'Other';
-}
+
 
 export interface ResultEntry {
   id?: number;
@@ -52,9 +43,15 @@ export interface UserDetail {
   firstName: string;
   lastName: string;
   email: string;
+  phone?: string;
+  enrollmentDate?: Date;
+  status?: 'active' | 'inactive' | 'graduated';
+  avatar?: string;
+  dateOfBirth?: Date;
   role: UserRole;
 
 }
+
 
 export interface CourseDetail {
   id: number;
@@ -71,6 +68,7 @@ export interface EnrollmentDetail {
   students: UserDetail[];
   magisters: UserDetail[];
   startDate: string;
+  status?: string
 }
 
 export interface SingleResultModal {
@@ -82,7 +80,7 @@ export interface SingleResultModal {
 
 
 export interface EntityListData {
-  id: string ;
+  id: string;
   title: string;
   subtitle: string;
   type?: string;
@@ -91,9 +89,8 @@ export interface EntityListData {
   description?: string;
   metadata?: { label: string; value: string }[];
   actions?: EntityAction[];
-  // Additional properties for filtering
   status?: string;
-  date?: string; // ISO date string
+  date?: string;
 }
 
 export interface EntityAction {

@@ -14,21 +14,9 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatInputModule } from '@angular/material/input';
 import { Observable, take, map } from 'rxjs';
 import { ApiService } from '../../../services/api/api.service';
-import { EntityListData } from '../../../shared/models/shared.model';
+import { UserDetail } from '../../../shared/models/shared.model';
 import { Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
-
-export interface Student {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  enrollmentDate: Date;
-  status: 'active' | 'inactive' | 'graduated';
-  avatar?: string;
-  dateOfBirth: Date;
-
-}
 
 
 @Component({
@@ -64,8 +52,8 @@ export class StudentListComponent {
     'actions'
   ];
 
-  dataSource = new MatTableDataSource<Student>([]);
-  selection = new SelectionModel<Student>(true, []);
+  dataSource = new MatTableDataSource<UserDetail>([]);
+  selection = new SelectionModel<UserDetail>(true, []);
   filterForm: FormGroup;
   showFilterPanel = false;
   totalItems = 0;
@@ -73,74 +61,7 @@ export class StudentListComponent {
   pageIndex = 0;
 
   // Sample data
-  students: Student[] = [
-    {
-      id: 'STU001',
-      name: 'John Smith',
-      email: 'john.smith@university.edu',
-      phone: '+1 (555) 123-4567',
-      enrollmentDate: new Date('2022-09-01'),
-      status: 'active',
-      avatar: 'JS',
-      dateOfBirth: new Date('2000-05-15'),
-
-    },
-    {
-      id: 'STU002',
-      name: 'Sarah Johnson',
-      email: 'sarah.j@university.edu',
-      phone: '+1 (555) 234-5678',
-      enrollmentDate: new Date('2022-09-01'),
-      status: 'active',
-      avatar: 'SJ',
-      dateOfBirth: new Date('2001-03-22'),
-
-    },
-    {
-      id: 'STU003',
-      name: 'Michael Brown',
-      email: 'm.brown@university.edu',
-      phone: '+1 (555) 345-6789',
-      enrollmentDate: new Date('2021-09-01'),
-      status: 'graduated',
-      avatar: 'MB',
-      dateOfBirth: new Date('1999-11-30'),
-
-    },
-    {
-      id: 'STU004',
-      name: 'Emily Davis',
-      email: 'emily.davis@university.edu',
-      phone: '+1 (555) 456-7890',
-      enrollmentDate: new Date('2023-01-15'),
-      status: 'active',
-      avatar: 'ED',
-      dateOfBirth: new Date('2002-07-18'),
-
-    },
-    {
-      id: 'STU005',
-      name: 'David Wilson',
-      email: 'd.wilson@university.edu',
-      phone: '+1 (555) 567-8901',
-      enrollmentDate: new Date('2022-09-01'),
-      status: 'inactive',
-      avatar: 'DW',
-      dateOfBirth: new Date('2000-12-05'),
-
-    },
-    {
-      id: 'STU006',
-      name: 'Jennifer Lee',
-      email: 'j.lee@university.edu',
-      phone: '+1 (555) 678-9012',
-      enrollmentDate: new Date('2023-01-15'),
-      status: 'active',
-      avatar: 'JL',
-      dateOfBirth: new Date('2001-09-12'),
-
-    }
-  ];
+  students: UserDetail[] = [];
 
   courses = [
     'Computer Science',
@@ -206,19 +127,19 @@ export class StudentListComponent {
   }
 
   loadStudents(page = 0, size = 20,
-     search = '',
+    search = '',
     sortBy = 'name',
-    sortDir: 'asc' | 'desc' = 'asc'): Observable<Student[]> {
+    sortDir: 'asc' | 'desc' = 'asc'): Observable<UserDetail[]> {
     return this.apiService.getAllStudents().pipe(
       take(1),
       map(res => res.map((data: { firstName: any; lastName: any; email: any; }) =>
       ({
-        name: `${data.firstName} ${data.lastName}`, email: data.email, phone: '+1 (555) 678-9012',
+        firstName: data.firstName, lastName: data.lastName, email: data.email, phone: '+1 (555) 678-9012',
         enrollmentDate: new Date('2023-01-15'),
         status: 'active',
         avatar: `${data.firstName.charAt(0)}${data.lastName.charAt(0)}  `,
         dateOfBirth: new Date('2001-09-12'),
-      } as Student)
+      } as UserDetail)
       ))
     );
 
@@ -239,10 +160,10 @@ export class StudentListComponent {
   applyFilter() {
     const filters = this.filterForm.value;
 
-    this.dataSource.filterPredicate = (data: Student, filter: string) => {
+    this.dataSource.filterPredicate = (data: UserDetail, filter: string) => {
       const filterObj = JSON.parse(filter);
       const nameMatch = !filterObj.name ||
-        data.name.toLowerCase().includes(filterObj.name.toLowerCase());
+        data.firstName.toLowerCase().includes(filterObj.name.toLowerCase());
       const statusMatch = !filterObj.status || data.status === filterObj.status;
 
       return nameMatch && statusMatch;
@@ -282,19 +203,19 @@ export class StudentListComponent {
     this.router.navigate(['/teacher/students/add']);
   }
 
-  editStudent(student: Student) {
+  editStudent(student: UserDetail) {
     // Implement edit student dialog
     console.log('Edit student:', student);
   }
 
-  viewStudent(student: Student) {
+  viewStudent(student: UserDetail) {
     // Implement view student details
     console.log('View student:', student);
   }
 
-  deleteStudent(student: Student) {
+  deleteStudent(student: UserDetail) {
     // Implement delete confirmation
-    if (confirm(`Are you sure you want to delete ${student.name}?`)) {
+    if (confirm(`Are you sure you want to delete ${student.firstName} ${student.lastName}?`)) {
       const index = this.dataSource.data.findIndex(s => s.id === student.id);
       if (index > -1) {
         this.dataSource.data.splice(index, 1);
@@ -304,7 +225,7 @@ export class StudentListComponent {
   }
 
   deleteSelected() {
-    const selectedNames = this.selection.selected.map(s => s.name).join(', ');
+    const selectedNames = this.selection.selected.map(s => s.firstName).join(', ');
     if (confirm(`Are you sure you want to delete ${selectedNames}?`)) {
       this.dataSource.data = this.dataSource.data.filter(
         student => !this.selection.isSelected(student)

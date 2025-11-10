@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { ApiService } from '../../../services/api/api.service';
 import { take } from 'rxjs';
 import { SingleResultModal } from '../../models/shared.model';
+import { MatButtonModule } from '@angular/material/button';
 
 
 @Component({
@@ -23,6 +24,7 @@ import { SingleResultModal } from '../../models/shared.model';
     MatSelectModule,
     MatIconModule,
     MatCardModule,
+    MatButtonModule
   ],
   templateUrl: './single-result-modal.component.html',
   styleUrl: './single-result-modal.component.scss'

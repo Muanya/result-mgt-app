@@ -1,0 +1,124 @@
+<!-- add-students-dialog.component.html -->
+<div class="add-students-dialog">
+  <!-- Header -->
+  <div mat-dialog-title class="dialog-header">
+    <h2>Add Students to Enrollment</h2>
+    <button mat-icon-button (click)="onCancel()" class="close-button">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div mat-dialog-content class="dialog-content">
+    <!-- Search and Selection Info -->
+    <div class="search-section">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search Students</mat-label>
+        <input matInput [formControl]="searchControl" placeholder="Search by name, email, or student ID">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <div class="selection-info">
+        <span class="selected-count">{{ getSelectedCount() }} students selected</span>
+        <div class="selection-actions">
+          <button mat-stroked-button (click)="clearSelection()" [disabled]="selection.size === 0">
+            <mat-icon>clear_all</mat-icon>
+            Clear All
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <mat-spinner diameter="40"></mat-spinner>
+      <p>Loading available students...</p>
+    </div>
+
+    <!-- Students Table -->
+    <div *ngIf="!isLoading" class="students-table-container">
+      <table mat-table [dataSource]="dataSource" matSort class="students-table">
+        
+        <!-- Select Column -->
+        <ng-container matColumnDef="select">
+          <th mat-header-cell *matHeaderCellDef>
+            <mat-checkbox
+              [checked]="isAllFilteredSelected()"
+              [indeterminate]="isSomeFilteredSelected()"
+              (change)="toggleSelectAll()"
+              color="primary">
+            </mat-checkbox>
+          </th>
+          <td mat-cell *matCellDef="let student">
+            <mat-checkbox
+              [checked]="isStudentSelected(student)"
+              (change)="toggleStudentSelection(student)"
+              color="primary">
+            </mat-checkbox>
+          </td>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+          <td mat-cell *matCellDef="let student" class="name-cell">
+            <div class="student-avatar">
+              {{ student.firstName.charAt(0) }}{{ student.lastName.charAt(0) }}
+            </div>
+            <div class="student-name">
+              {{ getDisplayName(student) }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Email Column -->
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let student" class="email-cell">
+            {{ student.email }}
+          </td>
+        </ng-container>
+
+        <!-- Student ID Column -->
+        <ng-container matColumnDef="studentId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Student ID</th>
+          <td mat-cell *matCellDef="let student" class="id-cell">
+            {{ student.studentId || 'N/A' }}
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <!-- Empty State -->
+      <div *ngIf="dataSource.data.length === 0 && !isLoading" class="empty-state">
+        <mat-icon>group_off</mat-icon>
+        <h3>No students available</h3>
+        <p>All students are already enrolled in this course.</p>
+      </div>
+
+      <div *ngIf="dataSource.data.length > 0 && dataSource.filteredData.length === 0" class="empty-state">
+        <mat-icon>search_off</mat-icon>
+        <h3>No students found</h3>
+        <p>Try adjusting your search criteria.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div mat-dialog-actions class="dialog-actions">
+    <button mat-button (click)="onCancel()" class="cancel-button">
+      Cancel
+    </button>
+    <button 
+      mat-raised-button 
+      color="primary" 
+      (click)="onAddStudents()"
+      [disabled]="selectedStudents.length === 0"
+      class="add-button">
+      <mat-icon>group_add</mat-icon>
+      Add Selected Students ({{ getSelectedCount() }})
+    </button>
+  </div>
+</div>
